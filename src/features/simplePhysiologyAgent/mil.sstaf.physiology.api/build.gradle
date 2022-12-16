@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaf.physiology.api'
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+}
+
+
+
+

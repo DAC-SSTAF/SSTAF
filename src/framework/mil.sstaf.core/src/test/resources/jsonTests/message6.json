@@ -1,0 +1,9 @@
+{
+  "class": "mil.sstaf.core.json.Message6",
+  "fours": [
+    "./message4.json",
+    "./message4.json",
+    "./message4.json",
+    "./message4.json"
+  ]
+}

@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+}
+
+
+

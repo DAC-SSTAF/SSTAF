@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+}
+task copyJar(type: Copy) {
+    from jar
+    into "../../../../src/framework/mil.sstaf.core/src/integrationTest/resources/modules/jamesbond"
+}
+
+build.dependsOn copyJar

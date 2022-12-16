@@ -1,0 +1,26 @@
+ext.moduleName = 'mil.sstaf.physiology.agent'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api');
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
+    implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+
+    testRuntimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+    testRuntimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.musculature')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.energy')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.vision')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cardiovascular')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cognition')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.respiration')
+    testRuntimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.hydration')
+    //testRuntimeOnly project(':mil.sstaf.anthropometry.simple')
+}
+
+
+

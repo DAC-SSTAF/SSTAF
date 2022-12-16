@@ -1,0 +1,38 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaf.telemetry'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+
+    testImplementation project(':verification:mil.sstaftest.util')
+    testRuntimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+
+}
+
+testing {
+    suites {
+        integrationTest {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':features:support:mil.sstaf.blackboard.api')
+                implementation project(':verification:mil.sstaftest.util')
+                implementation project(':testFeatures:integration:mil.sstaftest.simplemock')
+                implementation project(':testFeatures:integration:mil.sstaftest.jamesbond')
+                implementation project(':testFeatures:integration:mil.sstaftest.alpha')
+                implementation project(':testFeatures:integration:mil.sstaftest.bravo')
+                implementation project(':testFeatures:integration:mil.sstaftest.charlie')
+                implementation project(':testFeatures:integration:mil.sstaftest.delta')
+                implementation project(':testFeatures:integration:mil.sstaftest.echo')
+
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.handler1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.agent1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.pinky')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+            }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.framework'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':testFeatures:support:mil.sstaftest.mocks.api')
+    implementation project(':testFeatures:support:mil.sstaftest.mocks.agent1')
+
+    runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.handler1')
+    runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.agent1')
+    runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.brain')
+    runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.pinky')
+
+    testImplementation project(':verification:mil.sstaftest.util')
+}
+
+

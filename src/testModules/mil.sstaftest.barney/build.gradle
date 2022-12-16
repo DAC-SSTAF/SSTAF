@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+task copyJar(type: Copy) {
+    from jar
+    into "../../framework/mil.sstaf.core/src/test/resources/moduleLayers/dir2"
+}
+
+build.dependsOn copyJar

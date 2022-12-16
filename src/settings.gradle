@@ -1,0 +1,33 @@
+/*
+ * Specifies the content to build and other root-level settings.
+ */
+//
+// Specifies from where to retrieve the plugins.
+//
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            name = 'localPluginRepository'
+            url = System.getProperty('user.home')+"/.m2/local-plugin-repository"
+        }
+    }
+}
+
+rootProject.name = 'Unified SSTAF'
+
+/*
+ * Traverse the project and include all of the sub-projects
+ */
+fileTree('.') {
+   include '**/build.gradle'
+   exclude 'build.gradle' // Exclude the root build file.
+   exclude 'buildSrc/build.gradle' // and the buildSrc dir
+}.collect {
+    relativePath(it.parent).replace(File.separator, ':')
+}.each {
+  include(it)
+  println("Including ${it}")
+}

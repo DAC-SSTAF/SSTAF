@@ -1,0 +1,6 @@
+{
+  "class": "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+  "propertyName": "subjectID",
+  "lowerBound": 10173,
+  "upperBound": 10173
+}

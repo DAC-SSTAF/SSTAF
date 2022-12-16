@@ -1,0 +1,32 @@
+{
+  "class" : "mil.devcom_sc.ansur.api.ANSURConfiguration",
+  "constraints": [
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.StringConstraint",
+      "propertyName": "Gender",
+      "matches": "Male"
+    },
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+      "propertyName": "balloffootlength",
+      "equals": 198
+    },
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+      "propertyName": "footlength",
+      "equals": 270
+    },
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+
+      "propertyName": "lowerthighcircumference",
+      "lowerBound": 390,
+      "upperBound": 395
+    },
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.StringConstraint",
+      "propertyName": "SubjectsBirthLocation",
+      "matches": ".*uck.*"
+    }
+  ]
+}

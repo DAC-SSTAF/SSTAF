@@ -1,0 +1,9 @@
+{
+  "class": "mil.sstaf.core.configuration.SSTAFConfiguration",
+  "moduleLayerDefinition": {
+    "modules": [
+    ],
+    "modulePaths": [
+    ]
+  }
+}

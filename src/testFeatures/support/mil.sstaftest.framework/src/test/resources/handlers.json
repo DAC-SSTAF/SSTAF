@@ -1,0 +1,17 @@
+{
+  "handlers": [
+    {
+      "serviceName": "Handler1",
+      "majorVersion": 3,
+      "minorVersion": 1
+    }
+  ],
+  "agents": [
+    {
+      "serviceName": "Agent1",
+      "majorVersion": 3,
+      "minorVersion": 1
+    }
+  ]
+}
+

@@ -1,0 +1,16 @@
+{
+  "name": "Test Dude",
+  "anthro": {
+    "sex": "Female",
+    "age": 23,
+    "height_cm": 150,
+    "span_cm": 150,
+    "weight_kg": 50.0
+  },
+  "rank": "E6",
+  "kit": "TestKit.json",
+  "injuryProvider": "../humanFactoryTest/ip.json",
+  "aimProvider": "ap.json",
+  "targetingProvider": "tp.json"
+}
+

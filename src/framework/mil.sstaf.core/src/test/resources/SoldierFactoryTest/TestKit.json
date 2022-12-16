@@ -1,0 +1,14 @@
+{
+  "guns": [
+    "M16A1.json"
+  ],
+  "magazines": [
+    "STANAGMagazine.json",
+    "STANAGMagazine.json",
+    "STANAGMagazine.json",
+    "STANAGMagazine.json"
+  ],
+  "packs": [
+    "FannyPack.json"
+  ]
+}

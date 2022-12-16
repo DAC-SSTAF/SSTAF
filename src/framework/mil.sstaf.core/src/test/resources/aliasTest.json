@@ -1,0 +1,32 @@
+{
+  "Alice": 173,
+  "Bob": "The String is the Thing",
+  "Charley": 3.141592,
+  "Della": "Is not a Fella",
+  "Edgar": {
+    "Stuff": "Stuff"
+  },
+  "Fanny": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "Ginny": [
+    5,
+    4,
+    3,
+    2,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "Hal": {
+    "Best": "Pizza"
+  },
+  "Iris": 1864,
+  "Juliet": 2.71828
+}

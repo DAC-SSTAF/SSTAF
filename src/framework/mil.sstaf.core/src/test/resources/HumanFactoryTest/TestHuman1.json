@@ -1,0 +1,6 @@
+{
+  "class" : "mil.sstaf.core.entity.Human",
+  "name": "Test Dude",
+  "features": [],
+  "configurations": {}
+}

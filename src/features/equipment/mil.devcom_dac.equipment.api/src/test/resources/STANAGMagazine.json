@@ -1,0 +1,9 @@
+{
+  "class" : "mil.devcom_dac.equipment.api.Magazine",
+  "name": "5.56mm STANAG 30rd",
+  "magazineType": "5.56mm STANAG",
+  "capacity": 30,
+  "currentLoad" : 30,
+  "perRoundMass_kg": 0.01231,
+  "emptyMass_kg": 0.1207
+}

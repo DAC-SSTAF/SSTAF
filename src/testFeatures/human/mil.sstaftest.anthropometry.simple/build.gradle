@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.anthropometry.simple'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation project(':testFeatures:human:mil.sstaftest.anthropometry.api')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+    testImplementation project(':verification:mil.sstaftest.util')
+}
+
+
+

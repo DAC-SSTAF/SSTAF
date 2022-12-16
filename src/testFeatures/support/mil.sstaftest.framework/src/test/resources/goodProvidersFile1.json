@@ -1,0 +1,8 @@
+{
+  "mil.sstaftest.mocks.api.PinkyProvider": {
+    "serviceName": "Pinky"
+  },
+  "mil.sstaftest.mocks.api.BrainProvider": {
+    "serviceName": "Brain"
+  }
+}

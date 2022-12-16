@@ -1,0 +1,8 @@
+{
+  "class" : "mil.sstaf.core.entity.Soldier",
+  "name": "Test Dude 2",
+  "rank": "E6",
+  "features": [
+  ],
+  "configurations": {}
+}

@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+}

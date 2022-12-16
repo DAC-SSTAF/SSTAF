@@ -1,0 +1,36 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/python"
+        }
+    }
+}
+
+jar {
+    manifest {
+
+        def fileList = []
+        ['src/main/python', 'src/main/resource'].each { String dir ->
+            fileTree(dir) {
+                include '**/*.py'
+                include '**/*.json'
+            }.collect {
+                // println(it.getPath())
+                relativePath(it)
+            }.each {
+                // println(it)
+                def trimmed = it.replace("$dir/",'')
+                fileList << trimmed
+                // println(fileList)
+            }
+        }
+        attributes('SSTAF-Module' : 'mil.sstaftest.simplemock')
+        attributes('SSTAF-Resources-To-Extract' : fileList.join(' '))
+    }
+}
+

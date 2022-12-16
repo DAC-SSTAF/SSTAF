@@ -1,0 +1,8 @@
+{
+  "name": "5.56mm STANAG 30rd",
+  "magazineType": "5.56mm STANAG",
+  "numLoaded": 30,
+  "capacity": 30,
+  "perRoundMass_kg": 0.01231,
+  "emptyMass_kg": 0.1207
+}

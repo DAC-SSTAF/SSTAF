@@ -1,0 +1,49 @@
+plugins {
+    id 'java-library'
+    id 'sstaf'
+}
+ext.moduleName = 'mil.sstaftest.util'
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/python"
+        }
+    }
+    test {
+        resources {
+            srcDirs "src/test/resources", "src/main/python", "src/test/python"
+        }
+    }
+}
+
+jar {
+    manifest {
+
+        def fileList = []
+        ['src/test/python', 'src/test/resource'].each { String dir ->
+            fileTree(dir) {
+                include '**/*.py'
+                include '**/*.json'
+            }.collect {
+                println(it.getPath())
+                relativePath(it)
+            }.each {
+                println(it)
+                def trimmed = it.replace("$dir/",'')
+                fileList << trimmed
+                println(fileList)
+            }
+        }
+        attributes('SSTAF-Module' : 'mil.sstaf.core')
+        attributes('SSTAF-Resources-To-Extract' : fileList.join(' '))
+    }
+}
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+}
+
+

@@ -1,0 +1,58 @@
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':framework:mil.sstaf.session')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+}
+
+testing {
+    suites {
+        test {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':framework:mil.sstaf.session')
+                implementation project(':testFeatures:integration:mil.sstaftest.simplemock')
+                implementation project(':testFeatures:integration:mil.sstaftest.jamesbond')
+                implementation project(':testFeatures:integration:mil.sstaftest.alpha')
+                implementation project(':testFeatures:integration:mil.sstaftest.bravo')
+                implementation project(':testFeatures:integration:mil.sstaftest.charlie')
+                implementation project(':testFeatures:integration:mil.sstaftest.delta')
+                implementation project(':testFeatures:integration:mil.sstaftest.echo')
+
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.handler1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.agent1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.pinky')
+
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+                runtimeOnly project(':features:equipment::mil.devcom_dac.equipment.handler')
+                runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.api')
+                runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.handler')
+                runtimeOnly project(':features:simplePhysiologyAgent::mil.sstaf.physiology.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.agent')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cardiovascular')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cognition')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.energy')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.hydration')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.musculature')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.respiration')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.vision')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.api')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+                runtimeOnly project(':features:support:mil.sstaf.telemetry')
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+

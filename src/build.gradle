@@ -1,0 +1,187 @@
+//
+// Necessary to resolve the dependencies for the SSTAF plugin
+//
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'org.ow2.asm:asm:9.2'
+        classpath 'org.projectlombok:lombok:1.18.22'
+        classpath 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+        classpath 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+        classpath 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'jvm-test-suite'
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '6.4.1'
+    id 'sstaf' version '1.0'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+allprojects {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+}
+
+/*
+ * Many libraries have yet to be upgrades as fully-compliant modules. This block defines modules for specific
+ * legacy libraries. It works with the plugin in the buildSrc diqrectory,
+ */
+Set<Project> modules = subprojects.findAll { project ->
+    project.path.contains('mil.') || project.path.contains('edu')
+}
+
+
+//
+// Some libraries are not modules yet, work around it.
+//
+configure(modules) {
+    apply plugin: 'java-library'
+    apply plugin: 'jvm-test-suite'
+    apply plugin: 'sstaf'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'maven-publish'
+
+    version = '1.0.0-SNAPSHOT'
+
+    String moduleName = getPath().split(":").last()
+    int splitPoint = moduleName.lastIndexOf('.')
+    String pomGroupId = moduleName.substring(0, splitPoint)
+    String pomArtifactId = moduleName.substring(splitPoint + 1)
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    java {
+        modularity.inferModulePath = true
+
+        //
+        // Cause the hashResources task to execute before jar. This enables the checksum files to be
+        // included in the jar.
+        //
+        tasks.named('jar') {
+            it.dependsOn(tasks.named('hashResources'))
+        }
+
+        tasks.named('assemble') {
+            it.dependsOn(tasks.named('integrationTest'))
+        }
+    }
+
+    sstaf {
+        // This does not have to be a complete description (e.g. here 'org.apache.commons.collections' does not export anything here).
+        // It only needs to be good enough to work in the context of this application we are building.
+        module('commons-math3-3.6.1.jar', 'commons.math3', '3.6.1') {
+            exports('org.apache.commons.math3.random')
+            exports('org.apache.commons.math3.analysis.function')
+            exports('org.apache.commons.math3.analysis.polynomials')
+            exports('org.apache.commons.math3.analysis')
+        }
+
+        module('jopt-simple-4.6.jar', 'jopt.simple', '4.6')
+        module('jmh-generator-annprocess-1.21.jar', 'jmh.generator.annprocess', '1.21')
+        module('jmh-core-1.21.jar', 'jmh.core', '1.21') {
+            exports('org.openjdk.jmh.annotations')
+            exports('org.openjdk.jmh')
+        }
+
+        //
+        // CSV support for ANSUR
+        //
+        module('commons-csv-1.8.jar', 'commons.csv', '1.8') {
+            exports 'org.apache.commons.csv'
+        }
+
+        //
+        // Set the hashing algorithm to be used for the resources.
+        //
+        hashAlgorithm = 'SHA-384'
+    }
+
+    dependencies {
+
+        implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+        implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+        implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+        implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+
+        implementation 'org.projectlombok:lombok:1.18.22'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.9.0'
+        testRuntimeOnly  'org.apiguardian:apiguardian-api:1.1.2'
+        testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+		groupId = pomGroupId
+		artifactId = pomArtifactId
+
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                name = 'DI2ENexus'
+                //credentials(PasswordCredentials)
+                url = "https://nexus.di2e.net/nexus3/repository/Private_SSTAF_Maven/"
+            }
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    testing {
+        suites {
+            integrationTest(JvmTestSuite) {
+                dependencies {
+                    implementation project
+                    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+                    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+                    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+                    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+                    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+                    implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+                    implementation  'org.apiguardian:apiguardian-api:1.1.2'
+                    runtimeOnly 'org.junit.jupiter:junit-jupiter:5.8.2'
+                    runtimeOnly  'org.apiguardian:apiguardian-api:1.1.2'
+                    runtimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
+                }
+
+                targets {
+                    all {
+                        testTask.configure {
+                            shouldRunAfter(test)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.named('check') {
+        dependsOn(testing.suites.integrationTest)
+    }
+}
+
+
+

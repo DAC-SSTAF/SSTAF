@@ -1,0 +1,9 @@
+{
+  "name": "Test Dude",
+  "anthro": "anthro.json",
+  "rank": "E6",
+  "kit": "TestKit.json",
+  "kinematicsProvider": "kp.json",
+  "injuryProvider": "ip.json",
+  "targetingProvider": "tp.json"
+}

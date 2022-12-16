@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.mocks.brain'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':testFeatures:support:mil.sstaftest.mocks.api')
+    testImplementation project(':verification:mil.sstaftest.util')
+}
+
+

@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:equipment:mil.devcom_dac.equipment.messages')
+    implementation project(':features:equipment:mil.devcom_dac.equipment.api')
+}
+
+
+

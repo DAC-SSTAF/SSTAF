@@ -1,0 +1,13 @@
+dependencies {
+    api project(':features:support:mil.sstaf.blackboard.api')
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+
+    testImplementation project(':verification:mil.sstaftest.util')
+
+    integrationTestImplementation project(':verification:mil.sstaftest.util')
+    integrationTestRuntimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+}
+
+
+

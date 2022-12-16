@@ -1,0 +1,8 @@
+{
+  "class" : "mil.sstaf.core.features.FeatureConfiguration",
+  "serviceName": "ORCA",
+  "majorVersion": 3,
+  "minorVersion": 1,
+  "requireExact": true,
+  "configuration": {}
+}

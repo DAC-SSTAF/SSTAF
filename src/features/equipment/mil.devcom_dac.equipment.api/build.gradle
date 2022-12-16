@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+}
+
+
+

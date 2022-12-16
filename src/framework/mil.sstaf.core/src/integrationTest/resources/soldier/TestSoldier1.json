@@ -1,0 +1,41 @@
+{
+  "class" : "mil.sstaf.core.entity.Soldier",
+  "name": "Test Dude",
+  "rank": "E6",
+
+  "moduleLayerDefinition" : {
+    "modules": [
+      "mil.sstaftest.jamesbond"
+    ],
+    "modulePaths": [
+      "src/integrationTests/resources/modules/jamesbond"
+    ]
+  },
+  "features": [
+    {
+      "featureName": "James Bond",
+      "majorVersion": 7,
+      "minorVersion": 0
+    }
+  ],
+  "configurations": {
+    "James Bond": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Alpha": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Bravo": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Charlie": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Delta": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Echo": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    }
+  }
+}

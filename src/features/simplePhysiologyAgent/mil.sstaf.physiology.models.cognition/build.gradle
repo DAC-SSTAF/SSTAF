@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaf.physiology.models.cognition'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
+    implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+}
+
+
+

@@ -1,0 +1,15 @@
+{
+  "class" : "mil.devcom_sc.ansur.api.ANSURConfiguration",
+  "constraints": [
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.StringConstraint",
+      "propertyName": "Gender",
+      "matches": "Female"
+    },
+    {
+      "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+      "propertyName": "weightkg",
+      "upperBound" : 650
+    }
+  ]
+}

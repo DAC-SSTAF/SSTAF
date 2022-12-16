@@ -1,0 +1,12 @@
+{
+  "class": "mil.sstaf.session.control.EntityController",
+  "entities": {
+    "BLUE": [],
+    "RED": [],
+    "GRAY": []
+  },
+  "features": [],
+  "configurations": {
+  },
+  "randomSeed": 3
+}

@@ -1,0 +1,23 @@
+{
+  "class": "mil.sstaf.session.control.EntityController",
+  "entities": {
+    "BLUE": [
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json"
+    ],
+    "RED": [
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json",
+      "../UnitConfiguration/Platoon.json"
+    ],
+    "GRAY": []
+  },
+  "features": [],
+  "configurations": {},
+  "randomSeed": 3
+}

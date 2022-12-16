@@ -1,0 +1,18 @@
+{
+  "class": "mil.sstaf.core.configuration.SSTAFConfigurationToo",
+  "moduleLayerDefinition": {
+    "modules": [
+      "mil.sstaftest.fred",
+      "mil.sstaftest.wilma",
+      "mil.sstaftest.betty",
+      "mil.sstaftest.barney"
+    ],
+    "modulePaths": [
+      "dir1",
+      "dir2",
+      "dir3",
+      "dir4"
+    ]
+  },
+  "more": "This is something more!"
+}

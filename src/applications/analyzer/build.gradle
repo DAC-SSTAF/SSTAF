@@ -1,0 +1,121 @@
+plugins {
+    id 'sstaf'
+    id 'jvm-test-suite'
+    id 'maven-publish'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':framework:mil.sstaf.session')
+    implementation project(':framework:mil.sstaf.analyzer')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    runtimeOnly group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+    runtimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
+    runtimeOnly group: 'net.java.dev.jna', name: 'jna', version: '5.4.0'
+    runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')
+    runtimeOnly project(':features:support:mil.sstaf.telemetry')
+    runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.api')
+    runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.handler')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.agent')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cardiovascular')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cognition')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.energy')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.hydration')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.musculature')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.respiration')
+    runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.vision')
+    runtimeOnly project(':features:support:mil.sstaf.blackboard.api')
+    runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+}
+
+sstaf {
+    // This does not have to be a complete description (e.g. here 'org.apache.commons.collections' does not export anything here).
+    // It only needs to be good enough to work in the context of this application we are building.
+    module('commons-math3-3.6.1.jar', 'commons.math3', '3.6.1') {
+        exports('org.apache.commons.math3.random')
+        exports('org.apache.commons.math3.analysis.function')
+        exports('org.apache.commons.math3.analysis.polynomials')
+        exports('org.apache.commons.math3.analysis')
+    }
+
+    module('jopt-simple-4.6.jar', 'jopt.simple', '4.6')
+    module('jmh-generator-annprocess-1.21.jar', 'jmh.generator.annprocess', '1.21')
+    module('jmh-core-1.21.jar', 'jmh.core', '1.21') {
+        exports('org.openjdk.jmh.annotations')
+        exports('org.openjdk.jmh')
+    }
+
+    //
+    // CSV support for ANSUR
+    //
+    module('commons-csv-1.8.jar', 'commons.csv', '1.8') {
+        exports 'org.apache.commons.csv'
+    }
+
+    //
+    // Set the hashing algorithm to be used for the resources.
+    //
+    hashAlgorithm = 'SHA-384'
+}
+
+
+application {
+    mainClass = 'mil.sstaf.analyzer.Main'
+    mainModule = 'mil.sstaf.analyzer'
+    applicationName = 'sstaf-analyzer'
+
+    applicationDefaultJvmArgs = ['--add-modules', 'ALL-MODULE-PATH']
+}
+
+testing {
+    suites {
+        integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':framework:mil.sstaf.session')
+                implementation project(':framework:mil.sstaf.analyzer')
+
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')
+                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+                runtimeOnly project(':features:equipment::mil.devcom_dac.equipment.handler')
+                runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.api')
+                runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.handler')
+                runtimeOnly project(':features:simplePhysiologyAgent::mil.sstaf.physiology.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.agent')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.api')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cardiovascular')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.cognition')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.energy')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.hydration')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.musculature')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.respiration')
+                runtimeOnly project(':features:simplePhysiologyAgent:mil.sstaf.physiology.models.vision')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.api')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.api')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+                runtimeOnly project(':features:support:mil.sstaf.telemetry')
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}

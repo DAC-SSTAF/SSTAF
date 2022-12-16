@@ -1,0 +1,24 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':testFeatures:military:mil.sstaftest.maneuver.api')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+}
+
+testing {
+    suites {
+        integrationTest {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':testFeatures:military:mil.sstaftest.maneuver.api')
+                implementation project(':features:support:mil.sstaf.blackboard.api')
+                implementation project(':testFeatures:military:mil.sstaftest.maneuver.api')
+                implementation project(':testFeatures:military:mil.sstaftest.maneuver.entityagent')
+                implementation project(':features:support:mil.sstaf.blackboard.inmem')
+                implementation project(':verification:mil.sstaftest.util')
+                runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
+                runtimeOnly project(':testFeatures:military:mil.sstaftest.maneuver.entityagent')
+            }
+        }
+    }
+}
+

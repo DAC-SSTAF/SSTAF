@@ -1,0 +1,20 @@
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+
+task copyResources(type: Copy) {
+    from "${projectDir}/src/main/resources"
+    into "${buildDir}/classes/main"
+}
+processResources.dependsOn copyResources
+
+

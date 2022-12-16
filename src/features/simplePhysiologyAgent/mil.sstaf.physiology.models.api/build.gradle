@@ -1,0 +1,12 @@
+ext.moduleName = 'mil.sstaf.physiology.models.api'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
+    implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
+    implementation project(':features:equipment:mil.devcom_dac.equipment.api')
+}
+
+
+

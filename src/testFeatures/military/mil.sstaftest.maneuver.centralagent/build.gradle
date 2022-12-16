@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.maneuver.centralagent'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':features:support:mil.sstaf.blackboard.api')
+    implementation project(':testFeatures:military:mil.sstaftest.maneuver.api')
+    testImplementation project(':verification:mil.sstaftest.util')
+}
+
+

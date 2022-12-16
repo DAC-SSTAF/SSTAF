@@ -1,0 +1,5 @@
+/*
+ * Specifies the content to build and other root-level settings.
+ */
+rootProject.name = 'sstaf.gradle.plugin'
+

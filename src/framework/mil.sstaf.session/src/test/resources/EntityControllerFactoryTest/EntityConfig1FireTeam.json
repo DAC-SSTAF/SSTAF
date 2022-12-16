@@ -1,0 +1,13 @@
+{
+  "class": "mil.sstaf.session.control.EntityController",
+  "entities": {
+    "BLUE": [
+      "../UnitConfiguration/FireTeam.json"
+    ],
+    "RED": [],
+    "GRAY": []
+  },
+  "features": [],
+  "configurations": {},
+  "randomSeed": 3
+}

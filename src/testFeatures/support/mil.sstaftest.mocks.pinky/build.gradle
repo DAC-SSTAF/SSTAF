@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.mocks.pinky'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':testFeatures:support:mil.sstaftest.mocks.api')
+}
+
+task copyJar(type: Copy) {
+    from jar
+    into "../../../../src/framework/mil.sstaf.core/src/integrationTest/resources/modules/pinky"
+}
+
+build.dependsOn copyJar

@@ -1,0 +1,44 @@
+# Ignore Gradle project-specific cache directory
+
+# Ignore Gradle lock files
+**/.lock
+
+
+#
+# Ignore Gradle build output directory
+#
+src/build/
+src/*/build
+src/*/*/build
+*.class
+**/.gradle
+
+
+#
+# Ignore various eclipse artifacts
+#
+**/.settings
+**/.classpath
+**/.project
+**/.eml
+
+#
+# Target created by mvn when building repository
+#
+src/target
+
+build
+*~
+
+#
+# Ignore IntelliJ artifcats
+#
+**/.idea
+**/out
+**/*.iml
+
+#
+# MacOS directory artifacts
+#
+**/.DS_Store
+

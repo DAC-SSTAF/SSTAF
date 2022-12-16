@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+ext.moduleName = 'mil.sstaftest.maneuver.api'
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+}
+
+

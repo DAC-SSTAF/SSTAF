@@ -1,0 +1,16 @@
+{
+  "class" : "mil.sstaf.core.entity.Soldier",
+  "name": "Test Dude",
+  "kinematicsProvider": {
+    "serviceName": "Santos",
+    "majorVersion": [],
+    "minorVersion": 1,
+    "requireExact": true,
+    "configuration": {}
+  },
+  "rank": "E6",
+  "kit": "TestKit.json",
+  "injuryProvider": "src/test/resources/humanFactoryTest/ip.json",
+  "aimProvider": "ap.json",
+  "targetingProvider": "tp.json"
+}

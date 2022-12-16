@@ -1,0 +1,50 @@
+/**
+ * Build configuration for the plugin
+ */
+plugins {
+    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.14.0'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.ow2.asm:asm:9.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+    // Use JUnit test framework for unit tests
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.8.1'
+}
+
+group 'sstaf'
+version '1.0'
+
+gradlePlugin {
+    // Define the plugin
+    plugins {
+        sstafPlugin {
+            id = 'sstaf'
+            displayName = 'SSTAF Module-builder Plugin'
+            description = 'Builds SSTAF things'
+            implementationClass = 'mil.sstaf.gradle.plugin.SSTAFGradlePlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'localPluginRepository'
+            url = System.getProperty('user.home') + "/.m2/local-plugin-repository"
+        }
+    }
+}
+
+

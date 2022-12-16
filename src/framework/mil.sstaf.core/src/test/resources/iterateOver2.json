@@ -1,0 +1,18 @@
+{
+  "stuff": [
+    {
+      "name": "A"
+    },
+    "AAABBBCCC",
+    "DDDEEEFFF",
+    {
+      "name": "B"
+    },
+    "GGGHHHIII",
+    "JJJKKKLLL",
+    {
+      "name": "C"
+    },
+    "MMMNNNOOO"
+  ]
+}

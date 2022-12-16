@@ -1,0 +1,4 @@
+{
+  "class" : "mil.sstaf.session.control.SessionConfiguration",
+  "async" : false
+}

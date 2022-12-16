@@ -1,0 +1,13 @@
+{
+  "name": "Bob",
+  "rank": "LTC",
+  "features": [],
+  "configurations": {},
+  "anthropometry": {
+    "weight": "120"
+  },
+  "injuryProvider": "ORCA",
+  "kinematicsProvider": "Simple",
+  "aimProvider": "dynamic",
+  "targetingProvider": "acquire"
+}

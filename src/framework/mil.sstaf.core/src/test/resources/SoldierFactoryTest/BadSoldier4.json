@@ -1,0 +1,21 @@
+{
+  "name": "Test Dude",
+  "anthro": {
+    "sex": "Female",
+    "age": 23,
+    "height_cm": 150,
+    "span_cm": 150,
+    "weight_kg": 50.0
+  },
+  "kinematicsProvider": {
+    "serviceName": "Santos",
+    "majorVersion": 3,
+    "minorVersion": 1,
+    "requireExact": true,
+    "configuration": {}
+  },
+  "rank": "E6",
+  "kit": "TestKit.json",
+  "aimProvider": "ap.json",
+  "targetingProvider": "tp.json"
+}

@@ -1,0 +1,31 @@
+{
+  "class" : "mil.sstaf.core.entity.Unit",
+  "name": "Test Platoon",
+  "type": "Platoon",
+  "features": [],
+  "configurations": {},
+  "soldiers": [
+    {
+      "position": "PL",
+      "soldier": "../SoldierFactoryTest/TestSoldier1.json"
+    },
+    {
+      "position": "DPL",
+      "soldier": "../SoldierFactoryTest/TestSoldier1.json"
+    }
+  ],
+  "subUnits": [
+    {
+      "label": "Squad A",
+      "unit": "Squad.json"
+    },
+    {
+      "label": "Squad B",
+      "unit": "Squad.json"
+    },
+    {
+      "label": "Squad C",
+      "unit": "Squad.json"
+    }
+  ]
+}

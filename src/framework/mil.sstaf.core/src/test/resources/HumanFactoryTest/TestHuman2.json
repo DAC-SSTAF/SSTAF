@@ -1,0 +1,23 @@
+{
+  "class" : "mil.sstaf.core.entity.Human",
+  "name": "Test Dude",
+  "anthro": {
+    "class" : "mil.sstaf.core.features.FeatureConfiguration",
+    "sex": "Female",
+    "age": 23,
+    "height_cm": 150,
+    "span_cm": 150,
+    "weight_kg": 50.0
+  },
+  "mil.kinematicsProvider": {
+    "class" : "mil.sstaf.core.features.FeatureConfiguration",
+    "serviceName": "Santos",
+    "majorVersion": 3,
+    "minorVersion": 1,
+    "requireExact": true,
+    "configuration": {}
+  },
+  "injuryProvider": "ip.json",
+  "features": [],
+  "configurations": {}
+}
