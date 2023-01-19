@@ -98,7 +98,15 @@ class MessageDigestVisitor implements FileVisitor<Path> {
      */
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
         Path relative = resourceDir.relativize(file);
+        String pathString = relative.toString();
+
+        String osName = System.getProperty("os.name");
+        if (osName != null && osName.contains("Windows")) {
+            pathString = pathString.replace("\\", "/");
+        }
+        System.out.println(relative.toString() + " ---> " + pathString);
 
         byte[] buffer = new byte[1024];
         int read = 0;
@@ -110,7 +118,7 @@ class MessageDigestVisitor implements FileVisitor<Path> {
         byte[] checksum = messageDigest.digest();
         String encoded = bytesToString(checksum);
 
-        hashReport.put(relative.toString(), encoded);
+        hashReport.put(pathString, encoded);
         return FileVisitResult.CONTINUE;
     }
 

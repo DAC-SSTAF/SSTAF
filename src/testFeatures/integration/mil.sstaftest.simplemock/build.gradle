@@ -13,23 +13,24 @@ sourceSets {
 
 jar {
     manifest {
-
         def fileList = []
         ['src/main/python', 'src/main/resource'].each { String dir ->
             fileTree(dir) {
                 include '**/*.py'
                 include '**/*.json'
             }.collect {
-                // println(it.getPath())
+                println(it.getPath())
                 relativePath(it)
             }.each {
-                // println(it)
-                def trimmed = it.replace("$dir/",'')
-                fileList << trimmed
-                // println(fileList)
+                println(it)
+                def prefixLength = dir.length()+1;
+                def trimmed = it.substring(prefixLength)
+                def corrected = trimmed.replace(File.separator, "/") // Always a slash.
+                fileList << corrected
+                println(fileList)
             }
         }
-        attributes('SSTAF-Module' : 'mil.sstaftest.simplemock')
+        attributes('SSTAF-Module' : 'mil.sstaf.core')
         attributes('SSTAF-Resources-To-Extract' : fileList.join(' '))
     }
 }

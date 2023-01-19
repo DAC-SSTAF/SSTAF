@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2022
- * United States Government as represented by the U.S. Army DEVCOM Analysis Center.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package mil.sstaf.core.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,7 +15,7 @@ public class ReferenceWrapper extends BaseNodeWrapper<JsonNode> {
 
     public ReferenceWrapper(String ref, NodeWrapper parent, JsonNode node,
                             ObjectMapperFactory objectMapperFactory,
-                            Map<String, JsonNode> referenceCache) {
+                            Map<Path, JsonNode> referenceCache) {
         super(parent, node, objectMapperFactory, referenceCache);
         this.ref = ref;
         this.pathToRef = makeRegPath(ref);
@@ -40,8 +23,9 @@ public class ReferenceWrapper extends BaseNodeWrapper<JsonNode> {
     }
 
     public Path makeRegPath(String ref) {
-        if (ref.startsWith("/")) {
-            return Path.of(ref).normalize().toAbsolutePath();
+        Path p = Path.of(ref);
+        if (p.isAbsolute()) {
+            return p.normalize();
         } else {
             return Path.of(getDirectory().toString(), ref).normalize().toAbsolutePath();
         }
@@ -51,13 +35,13 @@ public class ReferenceWrapper extends BaseNodeWrapper<JsonNode> {
     public void resolve() {
 
         if (parent.refCount(ref) == 0) {
-            String pathString = pathToRef.toString();
+            Path path = makeRegPath(pathToRef.toString());
             JsonNode replacementNode;
-            if (cache.containsKey(pathString)) {
-                replacementNode = cache.get(pathString);
+            if (cache.containsKey(path)) {
+                replacementNode = cache.get(path);
             } else {
-                replacementNode = loadAndResolve(pathString);
-                cache.put(pathString, replacementNode);
+                replacementNode = loadAndResolve(path);
+                cache.put(path, replacementNode);
             }
             parent.replaceNode(myNode, replacementNode);
             resolved = true;
@@ -66,11 +50,10 @@ public class ReferenceWrapper extends BaseNodeWrapper<JsonNode> {
         }
     }
 
-    private JsonNode loadAndResolve(String path) {
+    private JsonNode loadAndResolve(Path path) {
         try {
-            Path p = Path.of(path);
-            ObjectMapper objectMapper = objectMapperFactory.create(p);
-            JsonNode replacementNode = objectMapper.readTree(p.toFile());
+            ObjectMapper objectMapper = objectMapperFactory.create(path);
+            JsonNode replacementNode = objectMapper.readTree(path.toFile());
             processNode(replacementNode);
             return replacementNode;
         } catch (IOException ioException) {
@@ -93,4 +76,3 @@ public class ReferenceWrapper extends BaseNodeWrapper<JsonNode> {
     }
 
 }
-

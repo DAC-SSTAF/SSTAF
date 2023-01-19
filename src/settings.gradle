@@ -16,7 +16,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'Unified SSTAF'
+rootProject.name = 'sstaf-system'
 
 /*
  * Traverse the project and include all of the sub-projects

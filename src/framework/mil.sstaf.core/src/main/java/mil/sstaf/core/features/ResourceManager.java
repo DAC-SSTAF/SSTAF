@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2022
- * United States Government as represented by the U.S. Army DEVCOM Analysis Center.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package mil.sstaf.core.features;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
 
 /**
  * Manages access to resources that must be extracted to disk for use.
@@ -81,7 +65,7 @@ public class ResourceManager {
     }
 
     /**
-     * Extracts an item from the the resources package and writes it to a {@link File}.
+     * Extracts an item from the resources package and writes it to a {@link File}.
      *
      * <p>
      * Some {@code Feature} implementation rely on external applications to perform their function. These
@@ -100,22 +84,30 @@ public class ResourceManager {
         Objects.requireNonNull(resourceName, "resourceName");
         Objects.requireNonNull(tempDir, "tempDir");
         Module ownerModule = resourceOwner.getModule();
-        InputStream is = ownerModule.getResourceAsStream(resourceName);
-        if (is == null) {
+
+         InputStream is = ownerModule.getResourceAsStream(resourceName);
+         if (is == null) {
             logger.error("Resource {} was not found in module {}", resourceName,
                     ownerModule.getName());
             throw new IOException("Resource " + resourceName + " was not found");
         }
         Path path;
+
         if (resourceName.contains("/")) {
-            int chopAt = resourceName.lastIndexOf('/');
+            int chopAt = resourceName.lastIndexOf("/");
             String resourceDirPath = resourceName.substring(0, chopAt);
             String terminal = resourceName.substring(chopAt + 1);
-            Path dir = Path.of(String.valueOf(tempDir), resourceDirPath);
+            //
+            // Using Matcher below fixes the problems caused by the Windows file separator being treated
+            // as an escape character. Using File.separator alone results in an IllegalArgumentException
+            //
+            String resourceDirPathLocalFS = resourceDirPath.replaceAll("/",  Matcher.quoteReplacement(File.separator));
+            Path dir = Path.of(String.valueOf(tempDir), resourceDirPathLocalFS);
             Files.createDirectories(dir);
             path = Path.of(String.valueOf(dir), terminal);
         } else {
-            path = Path.of(tempDir.toString(), resourceName);
+            String resourceNameLocalFS = resourceName.replaceAll("/", File.separator);
+            path = Path.of(tempDir.toString(), resourceNameLocalFS);
         }
         Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
         return path.toFile();
@@ -282,7 +274,7 @@ public class ResourceManager {
         }
 
         /**
-         * Writes all of the resources specified in the manifest to the desired directory
+         * Writes all resources specified in the manifest to the desired directory
          *
          * @throws IOException if something bad happens
          */
@@ -307,7 +299,7 @@ public class ResourceManager {
         }
 
         /**
-         * Determines whether or not a resource needs to be written to disk.
+         * Determines whether a resource needs to be written to disk.
          *
          * @param name the name of the resource
          * @return true if the resource must be written, false otherwise.
@@ -375,6 +367,5 @@ public class ResourceManager {
 
 
 }
-
 
 

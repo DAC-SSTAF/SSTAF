@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2022
- * United States Government as represented by the U.S. Army DEVCOM Analysis Center.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package mil.sstaf.core.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,7 +24,7 @@ public class WrapperTest {
         @DisplayName("Confirm that reference counting works")
         public void testRefCount1() {
             ObjectMapperFactory omf = path -> null;
-            Map<String, JsonNode> cache = new HashMap<>();
+            Map<Path, JsonNode> cache = new HashMap<>();
 
             ReferenceWrapper one = new ReferenceWrapper("bob", null, null, omf, cache);
             ReferenceWrapper two = new ReferenceWrapper("bob", one, null, omf, cache);
@@ -57,7 +40,7 @@ public class WrapperTest {
         @DisplayName("Simplest test to confirm that a ReferenceWrapper can resolve a reference")
         void resolveTest1() {
             assertDoesNotThrow(() -> {
-                Map<String, JsonNode> referenceCache = new HashMap<>();
+                Map<Path, JsonNode> referenceCache = new HashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 //
@@ -66,16 +49,15 @@ public class WrapperTest {
                 //
                 String jsonString1 = "{\"class\":\"mil.sstaf.core.json.Message2\", \"ints\":[1,2,3,4,5,6]}";
                 JsonNode node1 = omf.create(null).readTree(jsonString1);
-                String referenceName = "/path/to/file.json";
-                referenceCache.put(referenceName, node1);
+                Path referencePath = Path.of("path", "to", "file.json").normalize().toAbsolutePath();
+                referenceCache.put(referencePath, node1);
 
                 //
                 // Create the top-level object that uses a reference
                 //
-                String jsonString2 = "{\"it\":\"/path/to/file.json\"}";
+                String jsonString2 = "{\"it\":\"path/to/file.json\"}";
                 JsonNode topNode = omf.create(null).readTree(jsonString2);
                 JsonNode itNode = topNode.get("it");
-                assertEquals(referenceName, itNode.asText());
 
                 //
                 // Build the wrappers
@@ -99,7 +81,7 @@ public class WrapperTest {
         @DisplayName("Try invoking resolution from the top level")
         void resolveTest2() {
             assertDoesNotThrow(() -> {
-                Map<String, JsonNode> referenceCache = new HashMap<>();
+                Map<Path, JsonNode> referenceCache = new HashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 //
@@ -108,16 +90,15 @@ public class WrapperTest {
                 //
                 String jsonString1 = "{\"class\":\"mil.sstaf.core.json.Message2\", \"ints\":[1,2,3,4,5,6]}";
                 JsonNode node1 = omf.create(null).readTree(jsonString1);
-                String referenceName = "/path/to/file.json";
-                referenceCache.put(referenceName, node1);
+                Path referencePath = Path.of("path", "to", "file.json").normalize().toAbsolutePath();
+                referenceCache.put(referencePath, node1);
 
                 //
                 // Create the top-level object that uses a reference
                 //
-                String jsonString2 = "{\"it\":\"/path/to/file.json\"}";
+                String jsonString2 = "{\"it\":\"path/to/file.json\"}";
                 JsonNode topNode = omf.create(null).readTree(jsonString2);
                 JsonNode itNode = topNode.get("it");
-                assertEquals(referenceName, itNode.asText());
 
                 //
                 // Build the top-level wrappers
@@ -139,7 +120,7 @@ public class WrapperTest {
         @DisplayName("Confirm that deserialization works for two-node system.")
         void resolveTest3() {
             assertDoesNotThrow(() -> {
-                Map<String, JsonNode> referenceCache = new HashMap<>();
+                Map<Path, JsonNode> referenceCache = new HashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 //
@@ -148,17 +129,16 @@ public class WrapperTest {
                 //
                 String jsonString1 = "{\"class\":\"mil.sstaf.core.json.Message2\", \"ints\":[1,2,3,4,5,6]}";
                 JsonNode node1 = omf.create(null).readTree(jsonString1);
-                String referenceName = "/path/to/file.json";
-                referenceCache.put(referenceName, node1);
+                Path referencePath = Path.of("path", "to", "file.json").normalize().toAbsolutePath();
+                referenceCache.put(referencePath, node1);
 
                 //
                 // Create the top-level object that uses a reference
                 //
                 String jsonString2 = "{\"class\":\"mil.sstaf.core.json.Message4\"," +
-                        " \"it\":\"/path/to/file.json\"}";
+                        " \"it\":\"path/to/file.json\"}";
                 JsonNode topNode = omf.create(null).readTree(jsonString2);
                 JsonNode itNode = topNode.get("it");
-                assertEquals(referenceName, itNode.asText());
 
                 //
                 // Build the top-level wrappers
@@ -186,11 +166,11 @@ public class WrapperTest {
         @DisplayName("Confirm that deserialization works for file-based, three-node system.")
         void resolveTest4() {
             assertDoesNotThrow(() -> {
-                Map<String, JsonNode> referenceCache = new ConcurrentHashMap<>();
+                Map<Path, JsonNode> referenceCache = new ConcurrentHashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 String userDir = System.getProperty("user.dir");
-                Path basePath = Path.of(userDir, "src/test/resources/jsonTests");
+                Path basePath = Path.of(userDir, "src", "test", "resources", "jsonTests");
 
                 Path topFile = Path.of(basePath.toString(), "message5.json");
                 JsonNode topNode = omf.create(null).readTree(topFile.toFile());
@@ -216,7 +196,7 @@ public class WrapperTest {
         @DisplayName("Confirm that deserialization works for arrays of references.")
         void resolveTest5() {
             assertDoesNotThrow(() -> {
-                Map<String, JsonNode> referenceCache = new ConcurrentHashMap<>();
+                Map<Path, JsonNode> referenceCache = new ConcurrentHashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 String userDir = System.getProperty("user.dir");
@@ -256,11 +236,11 @@ public class WrapperTest {
         @DisplayName("Confirm that circular references throw an exception.")
         void resolveTest5() {
             JsonResolutionException jre = assertThrows(JsonResolutionException.class, () -> {
-                Map<String, JsonNode> referenceCache = new ConcurrentHashMap<>();
+                Map<Path, JsonNode> referenceCache = new ConcurrentHashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 String userDir = System.getProperty("user.dir");
-                Path basePath = Path.of(userDir, "src/test/resources/jsonTests");
+                Path basePath = Path.of(userDir, "src", "test", "resources", "jsonTests");
 
                 Path topFile = Path.of(basePath.toString(), "message8.json");
                 JsonNode topNode = omf.create(null).readTree(topFile.toFile());
@@ -281,7 +261,7 @@ public class WrapperTest {
         @DisplayName("Confirm that bad references throw an exception.")
         void resolveTest6() {
             JsonResolutionException jre = assertThrows(JsonResolutionException.class, () -> {
-                Map<String, JsonNode> referenceCache = new ConcurrentHashMap<>();
+                Map<Path, JsonNode> referenceCache = new ConcurrentHashMap<>();
                 ObjectMapperFactory omf = path -> new ObjectMapper();
 
                 String userDir = System.getProperty("user.dir");

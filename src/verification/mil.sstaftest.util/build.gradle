@@ -19,7 +19,6 @@ sourceSets {
 
 jar {
     manifest {
-
         def fileList = []
         ['src/test/python', 'src/test/resource'].each { String dir ->
             fileTree(dir) {
@@ -30,8 +29,10 @@ jar {
                 relativePath(it)
             }.each {
                 println(it)
-                def trimmed = it.replace("$dir/",'')
-                fileList << trimmed
+                def prefixLength = dir.length()+1;
+                def trimmed = it.substring(prefixLength)
+                def corrected = trimmed.replace(File.separator, "/") // Always a slash.
+                fileList << corrected
                 println(fileList)
             }
         }

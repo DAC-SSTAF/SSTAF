@@ -28,6 +28,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -89,7 +90,15 @@ public class ResourceManagerTest {
             for (Map.Entry<String, File> entry : map.entrySet()) {
                 assertTrue(entry.getValue().exists());
                 assertTrue(entry.getValue().canRead());
-                assertTrue(entry.getValue().getPath().contains(entry.getKey()));
+                //
+                // Changed for Issue 5
+                //
+                // Originally "assertTrue(entry.getValue().getPath().contains(entry.getKey()));"
+                // This didn't work on Windows because of / vs \
+                //
+                String nativePath=entry.getValue().getPath();
+                String linuxified = nativePath.replaceAll(Pattern.quote(File.separator), "/");
+                assertTrue(linuxified.contains(entry.getKey()));
             }
         }
     }
