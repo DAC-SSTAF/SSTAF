@@ -1,0 +1,7 @@
+
+dependencies {
+    implementation project(':framework:mil.sstaf.core')
+    implementation project(':examples:pythonAgent:mil.sstaf.pyagent.messages')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+}
+
