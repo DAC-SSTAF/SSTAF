@@ -1,0 +1,58 @@
+{
+  "class": "mil.sstaf.core.entity.Soldier",
+  "name": "York",
+  "rank": "E5",
+
+  "moduleLayerDefinition": {
+    "modules": [
+      "mil.devcom_sc.ansur.api",
+      "mil.sstaf.blackboard.api",
+      "mil.ssatf.blackboard.inmem"
+    ],
+    "modulePaths": []
+  },
+
+  "features": [
+    {
+      "featureName": "Blackboard",
+
+      "majorVersion": 1,
+      "minorVersion": 0,
+      "requireExact": "false"
+    },
+    {
+      "featureName": "ANSUR Anthropometry",
+      "majorVersion": 0,
+      "minorVersion": 0,
+      "requireExact": "false"
+    },
+    {
+      "featureName": "Telemetry Agent",
+      "majorVersion": 0,
+      "minorVersion": 1,
+      "requireExact": "false"
+    }
+  ],
+  "configurations": {
+    "ANSUR Anthropometry": {
+      "class" : "mil.devcom_sc.ansur.api.ANSURConfiguration",
+      "constraints": [
+        {
+          "class" : "mil.devcom_sc.ansur.api.constraints.StringConstraint",
+          "propertyName": "PrimaryMOS",
+          "matches": "11B"
+        },
+        {
+          "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+          "propertyName": "stature",
+          "lowerBound": 1700
+        }
+      ]
+    },
+    "Santos Dynamics": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Telemetry Agent": "../common/telemetryConfig.json",
+    "Kit Manager": "../common/StandardKit.json"
+  }
+}

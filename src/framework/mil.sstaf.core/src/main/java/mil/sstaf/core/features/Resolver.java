@@ -129,8 +129,8 @@ public class Resolver {
         if (optConfig.isPresent()) {
             FeatureConfiguration featureConfiguration = optConfig.get();
             configureFeature(feature, configClass, featureConfiguration);
-        } else {
-            logger.info("No configuration was provided for {}", feature.getName());
+        } else if (feature.featureRequiresConfiguration()) {
+                logger.info("No configuration was provided for {}", feature.getName());
         }
     }
 

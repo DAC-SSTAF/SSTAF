@@ -179,4 +179,10 @@ public abstract class BaseFeature implements Feature {
         return initialized;
     }
 
+    /**
+     * &inheritDoc
+     */
+    public boolean featureRequiresConfiguration() {
+        return requiresConfiguration;
+    }
 }

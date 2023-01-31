@@ -16,12 +16,22 @@
  */
 package analyzer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import mil.devcom_sc.ansur.messages.GetValueMessage;
+import mil.devcom_sc.ansur.messages.ValueKey;
+import mil.sstaf.analyzer.messages.CommandList;
+import mil.sstaf.analyzer.messages.Mode;
+import mil.sstaf.core.features.HandlerContent;
+import mil.sstaf.session.messages.Command;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -29,6 +39,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -36,15 +47,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SSTAFAnalyzerIntegrationTest {
 
-    static final String endSessionMsg = "{ \"class\" : \"mil.sstaf.analyzer.commands.EndSession\" }\n";
-    static final String getEntitiesMsg = "{ \"class\" : \"mil.sstaf.analyzer.commands.GetEntities\"}\n";
-    static final boolean HEAVY = true; // Boolean.getBoolean("HEAVY_TEST");
+    static final String endSessionMsg = "{ \"class\" : \"mil.sstaf.analyzer.messages.Exit\" }\n";
+    static final String getEntitiesMsg = "{ \"class\" : \"mil.sstaf.analyzer.messages.GetEntities\"}\n";
+    static final boolean HEAVY = Boolean.getBoolean("HEAVY_TEST");
+    private static final Logger logger = LoggerFactory.getLogger(SSTAFAnalyzerIntegrationTest.class);
     static Path extractedPath;
     static Path extractedLibPath;
     static Path userDir;
     static Path baseDir;
     static Path inputDir;
     static Path resourceDir;
+
+    static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Unzip the zip file to the destination directory
@@ -68,7 +82,7 @@ public class SSTAFAnalyzerIntegrationTest {
             while (ze != null) {
                 String fileName = ze.getName();
                 Path entryPath = Path.of(destDir.toString(), fileName);
-                System.out.println("Unzipping to " + entryPath.normalize().toAbsolutePath());
+                logger.info("Unzipping to {}", entryPath.normalize().toAbsolutePath());
                 if (ze.isDirectory()) {
                     Files.createDirectories(entryPath);
                 } else {
@@ -141,6 +155,39 @@ public class SSTAFAnalyzerIntegrationTest {
         return files;
     }
 
+    private static List<String> getBadEntityFiles() {
+        List<String> files = List.of(
+                Path.of(inputDir.toString(), "badEntityFiles", "emptyFile.json").toString(),
+                Path.of(inputDir.toString(), "badEntityFiles", "somethingOtherThanEntity.json").toString()
+        );
+        return files;
+    }
+
+    private static void gotExpectedMessage(Process p, BufferedReader reader, String match) throws IOException, InterruptedException {
+
+        boolean gotMessage = false;
+        while (p.isAlive()) {
+            String in = reader.readLine();
+            if (in != null) {
+                System.out.printf("Looking for %s - Received - %s\n", match, in);
+                if (in.contains(match)) {
+                    gotMessage = true;
+                    break;
+                }
+            } else {
+                Thread.sleep(100);
+            }
+        }
+        assertTrue(gotMessage);
+    }
+
+    private static void sendMessage(BufferedWriter writer, String message) throws IOException {
+        System.out.printf("Sending - %s\n", message);
+        writer.write(message);
+        writer.newLine();
+        writer.flush();
+    }
+
     String makeModulePath() {
         StringBuilder sb = new StringBuilder();
         sb.append("--module-path=");
@@ -190,59 +237,33 @@ public class SSTAFAnalyzerIntegrationTest {
     void goodFiles(String entityFile) {
         assertDoesNotThrow(() -> {
             Process p = makeProcessWithArg(entityFile);
-            Thread.sleep(2000);
             OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
             BufferedWriter writer = new BufferedWriter(osw);
             InputStreamReader isr = new InputStreamReader(p.getInputStream());
             BufferedReader reader = new BufferedReader(isr);
-            System.out.println("Sending " + getEntitiesMsg);
-            writer.write(getEntitiesMsg);
-            writer.flush();
 
-            while (true) {
-                String in = reader.readLine();
-                if (in != null) {
-                    System.out.printf("Received - %s\n", in);
-                    break;
-                } else {
-                    Thread.sleep(100);
-                }
-            }
-            System.out.println("Writing " + endSessionMsg);
-            writer.write(endSessionMsg);
-            writer.flush();
-            boolean gotExitMessage = false;
-            while (p.isAlive()) {
-                String in2 = reader.readLine();
-                System.out.println("Read " + in2);
-                if (in2 != null) {
-                    System.out.printf("Read - %s\n", in2);
-                    if (in2.contains("EndSession")) {
-                        gotExitMessage = true;
-                    }
-                } else {
-                    Thread.sleep(100);
-                }
-            }
-            assertEquals(0, p.exitValue());
-            assertTrue(gotExitMessage);
+            sendMessage(writer, getEntitiesMsg);
+            gotExpectedMessage(p, reader, "GetEntitiesResult");
+            sendMessage(writer, endSessionMsg);
+            gotExpectedMessage(p, reader, "ExitResult");
+
         });
     }
 
-
-    private static List<String> getBadEntityFiles() {
-        List<String> files = List.of(
-                Path.of(inputDir.toString(), "badEntityFiles", "emptyFile.json").toString(),
-                Path.of(inputDir.toString(), "badEntityFiles", "somethingOtherThanEntity.json").toString()
-        );
-        return files;
+    private String makeEntityCommand(HandlerContent content) throws JsonProcessingException {
+        Command command = Command.builder()
+                .recipientPath("Test Platoon:Squad C:Fire Team Bravo:AR")
+                .content(content).build();
+        CommandList cl = CommandList.builder().command(command)
+                .mode(Mode.SUBMIT_AND_DISPATCH).build();
+        return objectMapper.writeValueAsString(cl);
     }
 
     @Nested
     @DisplayName("Test start-up failure modes")
     class FailureTests {
         @Test
-        @DisplayName("Confirm that an Analyzer started without arguments runs but exits with code 255.")
+        @DisplayName("Confirm that an Analyzer started without arguments runs but exits with code 1.")
         void testOne() {
             assertDoesNotThrow(() -> {
                 Process p = makeProcessWithNoArgs();
@@ -268,14 +289,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
     }
 
-    private String makeEntityCommand(String command) {
-        return "{ \"class\" : \"mil.sstaf.analyzer.commands.Command\", " +
-                "\"path\" : \"Test Platoon:Squad C:Fire Team Bravo:AR\", " +
-                "\"content\" : {" +
-                command +
-                "} }\n";
-    }
-
     @DisplayName("Confirm that messages can be sent and results received")
     @Nested
     class MessageTests {
@@ -285,58 +298,27 @@ public class SSTAFAnalyzerIntegrationTest {
             assertDoesNotThrow(() -> {
                 String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
                 Process p = makeProcessWithArg(entityFile);
-                Thread.sleep(2000);
                 OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
                 BufferedWriter writer = new BufferedWriter(osw);
                 InputStreamReader isr = new InputStreamReader(p.getInputStream());
                 BufferedReader reader = new BufferedReader(isr);
-                System.out.println("Sending " + getEntitiesMsg);
-                writer.write(getEntitiesMsg);
-                writer.flush();
 
-                while (true) {
-                    String in = reader.readLine();
-                    if (in != null) {
-                        System.out.printf("Received - %s\n", in);
-                        break;
-                    } else {
-                        Thread.sleep(100);
-                    }
-                }
-                String query = makeEntityCommand(
-                        "\"class\" : \"mil.devcom_sc.ansur.messages.GetValueMessage\", \"key\" : \"EAR_LENGTH\""
-                );
-                writer.write(query);
-                writer.flush();
-                System.out.println("Writing " + query);
-                while (true) {
-                    String in = reader.readLine();
-                    if (in != null) {
-                        System.out.printf("Received - %s\n", in);
-                        break;
-                    } else {
-                        Thread.sleep(100);
-                    }
+                sendMessage(writer, getEntitiesMsg);
+                gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                //
+                // Test all ANSUR values.
+                //
+                for (ValueKey key : ValueKey.values()) {
+                    String query = makeEntityCommand(GetValueMessage.of(key));
+                    sendMessage(writer, query);
+                    gotExpectedMessage(p, reader, "TickResult");
                 }
 
-                System.out.println("Writing " + endSessionMsg);
-                writer.write(endSessionMsg);
-                writer.flush();
-                boolean gotExitMessage = false;
-                while (p.isAlive()) {
-                    String in2 = reader.readLine();
-                    System.out.println("Read " + in2);
-                    if (in2 != null) {
-                        System.out.printf("Read - %s\n", in2);
-                        if (in2.contains("EndSession")) {
-                            gotExitMessage = true;
-                        }
-                    } else {
-                        Thread.sleep(100);
-                    }
-                }
-                assertEquals(0, p.exitValue());
-                assertTrue(gotExitMessage);
+                sendMessage(writer, endSessionMsg);
+                gotExpectedMessage(p, reader, "ExitResult");
+
+                p.waitFor(10, TimeUnit.SECONDS);
             });
         }
     }

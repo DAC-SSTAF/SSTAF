@@ -1,0 +1,20 @@
+{
+  "class": "mil.devcom_dac.equipment.api.EquipmentConfiguration",
+  "kit": {
+    "guns": [
+      "M4.json"
+    ],
+    "magazines": [
+      "STANAGMagazine.json",
+      "STANAGMagazine.json",
+      "STANAGMagazine.json",
+      "STANAGMagazine.json",
+      "STANAGMagazine.json",
+      "STANAGMagazine.json",
+      "STANAGMagazine.json"
+    ],
+    "packs": [
+      "MainPack.json"
+    ]
+  }
+}

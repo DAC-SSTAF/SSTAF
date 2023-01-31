@@ -1,0 +1,21 @@
+{
+  "class": "mil.sstaf.session.control.EntityController",
+  "moduleLayerDefinition": {
+    "modules": [
+      "mil.devcom_sc.ansur.handler",
+      "mil.devcom_dac.equipment.handler"
+    ],
+    "modulePaths": []
+  },
+  "entities": {
+    "BLUE": [
+      "units/Squad.json",
+      "units/Squad.json"
+    ],
+    "RED": [],
+    "GRAY": []
+  },
+  "features": [],
+  "configurations": {},
+  "randomSeed": 3
+}

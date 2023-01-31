@@ -1,0 +1,5 @@
+{
+  "class" : "mil.devcom_dac.equipment.api.Pack",
+  "name": "Main Pack",
+  "mass_kg": 30
+}
