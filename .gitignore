@@ -50,4 +50,10 @@ src/framework/mil.sstaf.core/src/test/resources/moduleLayers/dir2/*.jar
 src/framework/mil.sstaf.core/src/test/resources/moduleLayers/dir3/*.jar
 src/framework/mil.sstaf.core/src/test/resources/moduleLayers/dir4/*.jar
 src/framework/mil.sstaf.core/src/integrationTest/resources/modules/jamesbond/*.jar
+src/framework/mil.sstaf.core/src/integrationTest/resources/modules/pinky/*.jar
 
+#
+# Ignore any sstafTelemetry directories
+#
+src/applications/analyzer/sstafTelemetry
+**/sstafTelemetry
