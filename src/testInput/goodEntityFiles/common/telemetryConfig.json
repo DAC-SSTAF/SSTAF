@@ -1,0 +1,13 @@
+{
+  "class" : "mil.sstaf.telemetry.TelemetryConfiguration",
+  "stateKeys": [
+    "Aim Internals",
+    "Muscle Metrics",
+    "Cardiovascular Metrics",
+    "Energy Metrics",
+    "Vision Metrics",
+    "Hydration Metrics",
+    "Respiration Metrics",
+    "Cognition Metrics"
+  ]
+}

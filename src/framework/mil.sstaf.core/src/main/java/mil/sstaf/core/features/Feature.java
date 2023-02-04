@@ -88,4 +88,10 @@ public interface Feature {
      * @return true if the Feature has been initialized.
      */
     boolean isInitialized();
+
+    /**
+     * Returns whether the feature requires explicit configuration
+     * @return true if a configuration must be provided.
+     */
+    boolean featureRequiresConfiguration();
 }

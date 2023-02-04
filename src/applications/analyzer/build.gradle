@@ -16,6 +16,9 @@ dependencies {
     implementation project(':framework:mil.sstaf.analyzer')
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
     implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     runtimeOnly group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
     runtimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
@@ -86,10 +89,13 @@ testing {
                 implementation project(':framework:mil.sstaf.core')
                 implementation project(':framework:mil.sstaf.session')
                 implementation project(':framework:mil.sstaf.analyzer')
-
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+                implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
+                implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+                implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+                implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
                 runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
                 runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')
-                runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
                 runtimeOnly project(':features:equipment::mil.devcom_dac.equipment.handler')
                 runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.api')
                 runtimeOnly project(':features:equipment:mil.devcom_dac.equipment.handler')
@@ -109,13 +115,10 @@ testing {
                 runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
                 runtimeOnly project(':features:support:mil.sstaf.telemetry')
             }
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
         }
+    }
+
+    tasks.named('check') {
+        dependsOn(testing.suites.integrationTest)
     }
 }

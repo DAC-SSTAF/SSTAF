@@ -7,11 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import mil.sstaf.core.util.SSTAFException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class JsonLoader {
 
@@ -59,7 +56,6 @@ public class JsonLoader {
         try {
             return objectMapper.treeToValue(jsonNode, asClass);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new SSTAFException("Could not read object '" + jsonNode.toPrettyString() + "'", e);
         }
     }

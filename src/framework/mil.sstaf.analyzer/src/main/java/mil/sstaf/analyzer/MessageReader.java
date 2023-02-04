@@ -29,65 +29,92 @@ import java.util.function.Supplier;
 
 public class MessageReader implements Supplier<String> {
 
+    private static final Logger logger = LoggerFactory.getLogger(MessageReader.class);
     @Getter
     private final BufferedReader reader;
-
-    @Getter
-
-    private int openCurlies = 0;
-
-    @Getter
-    private int openSquares = 0;
-
-    private static final Logger logger = LoggerFactory.getLogger(MessageReader.class);
+    private Candidate candidate;
 
     public MessageReader(BufferedReader reader) {
         this.reader = Objects.requireNonNull(reader, "reader");
     }
 
-    String scanAndCleanLine(String line) {
-        String clean = line.replaceAll("\\R", " ");
-        for (char c : clean.toCharArray()) {
-            if (c == '{') ++openCurlies;
-            else if (c == '}') --openCurlies;
-            else if (c == '[') ++openSquares;
-            else if (c == ']') --openSquares;
-        }
-        if (openCurlies < 0) {
-            throw new SSTAFException("Encountered extra '}' in '" + clean + "'");
-        }
-        if (openSquares < 0) {
-            throw new SSTAFException("Encountered extra ']' in '" + clean + "'");
-        }
+    public int getOpenCurlies() {
+        return candidate == null ? 0 : candidate.getOpenCurlies();
+    }
 
-        return clean;
+    public int getOpenSquares() {
+        return candidate == null ? 0 : candidate.getOpenSquares();
     }
 
     public String get() {
-        logger.info("getting...");
-        StringBuilder sb = new StringBuilder();
+        logger.debug("getting...");
+        candidate = new Candidate();
         try {
-            while (true) {
+            boolean done = false;
+            while (reader.ready() && !done) {
                 String line = reader.readLine();
-                logger.info("Read {}", line);
                 if (line == null) {
-                    break;
-                } else {
-                    String clean = scanAndCleanLine(line);
-                    sb.append(clean);
-                    if (openCurlies == 0 && openSquares == 0) {
-                        break;
+                    if (!candidate.isEmpty()) {
+                        throw new SSTAFException("Malformed JSON, got '"
+                        +candidate.getString() + "'");
                     }
+                    break;
+                }  else {
+                    done = candidate.addLine(line);
                 }
             }
-            if (openCurlies != 0 || openSquares != 0) {
-                throw new SSTAFException("Malformed JSON command: '" + sb + "'");
+            if (candidate.isDone()) {
+                return candidate.getString();
+            } else {
+                return null;
             }
-            return sb.toString();
         } catch (IOException ioe) {
-            throw new SSTAFException("Could not read message",ioe);
+            return null;
         }
     }
 
+    static class Candidate {
+
+        private StringBuilder sb = new StringBuilder();
+        @Getter
+        private int openCurlies = 0;
+
+        @Getter
+        private int openSquares = 0;
+
+        boolean addLine(String line) {
+            Objects.requireNonNull(line, "line is null");
+            if (line.length() > 0){
+                String clean = line.replaceAll("\\R", " ");
+                for (char c : clean.toCharArray()) {
+                    if (c == '{') ++openCurlies;
+                    else if (c == '}') --openCurlies;
+                    else if (c == '[') ++openSquares;
+                    else if (c == ']') --openSquares;
+                }
+
+                if (openCurlies < 0) {
+                    throw new SSTAFException("Encountered extra '}' in '" + clean + "'");
+                }
+                if (openSquares < 0) {
+                    throw new SSTAFException("Encountered extra ']' in '" + clean + "'");
+                }
+                sb.append(clean);
+            }
+            return isDone();
+        }
+
+        boolean isDone() {
+            return sb.length() > 0 && openCurlies == 0 && openSquares == 0;
+        }
+
+        String getString() {
+            return sb.toString();
+        }
+
+        boolean isEmpty() {
+            return sb.length() == 0;
+        }
+    }
 }
 

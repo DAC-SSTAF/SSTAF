@@ -1,0 +1,24 @@
+{
+  "class" : "mil.sstaf.core.entity.Unit",
+  "name": "Test Squad",
+  "type": "Squad",
+  "features": [
+  ],
+  "configurations": {},
+  "soldiers": [
+    {
+      "position": "SL",
+      "soldier": "../soldiers/Soldier1.json"
+    }
+  ],
+  "subUnits": [
+    {
+      "label": "Fire Team Alpha",
+      "unit": "FireTeam.json"
+    },
+    {
+      "label": "Fire Team Bravo",
+      "unit": "FireTeam.json"
+    }
+  ]
+}

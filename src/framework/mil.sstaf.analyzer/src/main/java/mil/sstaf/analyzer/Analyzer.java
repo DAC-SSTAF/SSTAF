@@ -60,6 +60,7 @@ public class Analyzer {
     private final Callable<Integer> analysisREPL = new Callable<>() {
         @Override
         public Integer call() {
+            final int maxNulls = 100;
 
             //
             // Use anonymous inner classes so that Session already exists when
@@ -77,6 +78,7 @@ public class Analyzer {
                         break;
                     case TICK:
                         tickResult = session.tick(cl.getTime_ms());
+                        break;
                     case SUBMIT_ONLY:
                     default:
                         tickResult = session.getEmptyTickResult();
@@ -97,31 +99,33 @@ public class Analyzer {
             };
 
             ProcessingStrategy getEntitiesProcessingStrategy = command -> {
-                GetEntities getEntities = (GetEntities) command;
                 List<String> entityList = session.getEntityController().getEntityPaths();
                 return GetEntitiesResult.builder().entities(entityList).build();
             };
 
             ProcessingStrategy exitStrategy = command -> {
                 keepRunning.set(false);
-                return null;
+                return ExitResult.builder().exitTime(System.currentTimeMillis()).build();
             };
 
             Map<Class<? extends BaseAnalyzerCommand>, ProcessingStrategy> processingStrategyMap =
                     Map.of(Tick.class, tickProcessingStrategy,
-                            GetEntities.class, null,
-                            CommandList.class, commandListProcessingStrategy);
-
+                            GetEntities.class, getEntitiesProcessingStrategy,
+                            CommandList.class, commandListProcessingStrategy,
+                            Exit.class, exitStrategy);
 
             isRunning.set(true);
             int rv = 0;
+            int nulls=0;
+            String input = "";
             while (keepRunning.get()) {
                 try {
                     logger.debug("Getting command");
                     long startTime = System.currentTimeMillis();
-                    String input = inputSupplier.get();
+                    input = inputSupplier.get();
                     logger.debug("Got {}", input);
                     if (input != null && input.length() > 0) {
+                        nulls = 0;
                         BaseAnalyzerCommand command = deserializer.apply(input);
                         ProcessingStrategy strategy = processingStrategyMap.get(command.getClass());
                         BaseAnalyzerResult result;
@@ -134,15 +138,25 @@ public class Analyzer {
                         result.setId(command.getId());
                         result.setProcessingTime_ms(System.currentTimeMillis() - startTime);
                         String output = serializer.apply(result);
+                        logger.debug("Output is {}", output);
                         outputConsumer.accept(output);
-                        logger.info("Sending {}", output);
+                        logger.debug("Sending {}", output);
                     } else if (input != null) {
-                        logger.info("Received 0-length command");
+                        logger.debug("Received 0-length command");
                     } else {
-                        logger.info("Received null command");
+                        ++ nulls;
+                        logger.debug("Received null command - {}/{}",
+                                nulls, maxNulls);
+                        if (nulls >= 100) {
+                            keepRunning.set(false);
+                        } else {
+                            Thread.sleep(100);
+                        }
                     }
                 } catch (Exception e) {
+                    logger.warn("Exception thrown processing {}", input);
                     e.printStackTrace();
+                    keepRunning.set(false);
                     rv = -1;
                     break;
                 }

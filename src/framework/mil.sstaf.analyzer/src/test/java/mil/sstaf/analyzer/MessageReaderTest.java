@@ -20,6 +20,7 @@ package mil.sstaf.analyzer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import mil.sstaf.core.json.JsonLoader;
 import mil.sstaf.core.util.SSTAFException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,10 +53,12 @@ public class MessageReaderTest {
                 String json = "{";
                 MessageReader messageReader = makeReader(json);
                 assertNotNull(messageReader);
-                String valid = messageReader.scanAndCleanLine(json);
-                assertEquals(1, messageReader.getOpenCurlies());
-                assertEquals(0, messageReader.getOpenSquares());
-                assertEquals(json, valid);
+                MessageReader.Candidate candidate = new MessageReader.Candidate();
+                boolean done = candidate.addLine(json);
+                assertFalse(done);
+                assertEquals(1, candidate.getOpenCurlies());
+                assertEquals(0, candidate.getOpenSquares());
+                assertEquals(json,candidate.getString());
             });
         }
 
@@ -66,10 +69,12 @@ public class MessageReaderTest {
                 String json = "{[]}";
                 MessageReader messageReader = makeReader(json);
                 assertNotNull(messageReader);
-                String valid = messageReader.scanAndCleanLine(json);
-                assertEquals(0, messageReader.getOpenCurlies());
-                assertEquals(0, messageReader.getOpenSquares());
-                assertEquals(json, valid);
+                MessageReader.Candidate candidate = new MessageReader.Candidate();
+                boolean done = candidate.addLine(json);
+                assertTrue(done);
+                assertEquals(0, candidate.getOpenCurlies());
+                assertEquals(0, candidate.getOpenSquares());
+                assertEquals(json, candidate.getString());
             });
         }
 
@@ -80,10 +85,12 @@ public class MessageReaderTest {
                 String json = "{\n[\n]\n}";
                 MessageReader messageReader = makeReader(json);
                 assertNotNull(messageReader);
-                String valid = messageReader.scanAndCleanLine(json);
-                assertEquals(0, messageReader.getOpenCurlies());
-                assertEquals(0, messageReader.getOpenSquares());
-                assertEquals("{ [ ] }", valid);
+                MessageReader.Candidate candidate = new MessageReader.Candidate();
+                boolean done = candidate.addLine(json);
+                assertTrue(done);
+                assertEquals(0, candidate.getOpenCurlies());
+                assertEquals(0, candidate.getOpenSquares());
+                assertEquals("{ [ ] }", candidate.getString());
             });
         }
 
@@ -94,10 +101,12 @@ public class MessageReaderTest {
                 String json = "{\r[\r]\r}";
                 MessageReader messageReader = makeReader(json);
                 assertNotNull(messageReader);
-                String valid = messageReader.scanAndCleanLine(json);
-                assertEquals(0, messageReader.getOpenCurlies());
-                assertEquals(0, messageReader.getOpenSquares());
-                assertEquals("{ [ ] }", valid);
+                MessageReader.Candidate candidate = new MessageReader.Candidate();
+                boolean done = candidate.addLine(json);
+                assertTrue(done);
+                assertEquals(0, candidate.getOpenCurlies());
+                assertEquals(0, candidate.getOpenSquares());
+                assertEquals("{ [ ] }", candidate.getString());
             });
         }
 
@@ -108,10 +117,12 @@ public class MessageReaderTest {
                 String json = "{\r\n[\r\n]\r\n}";
                 MessageReader messageReader = makeReader(json);
                 assertNotNull(messageReader);
-                String valid = messageReader.scanAndCleanLine(json);
-                assertEquals(0, messageReader.getOpenCurlies());
-                assertEquals(0, messageReader.getOpenSquares());
-                assertEquals("{ [ ] }", valid);
+                MessageReader.Candidate candidate = new MessageReader.Candidate();
+                boolean done = candidate.addLine(json);
+                assertTrue(done);
+                assertEquals(0, candidate.getOpenCurlies());
+                assertEquals(0, candidate.getOpenSquares());
+                assertEquals("{ [ ] }", candidate.getString());
             });
         }
 
@@ -123,7 +134,9 @@ public class MessageReaderTest {
                         String json = "{\r\n[\r\n]\r\n}}";
                         MessageReader messageReader = makeReader(json);
                         assertNotNull(messageReader);
-                        messageReader.scanAndCleanLine(json);
+                        MessageReader.Candidate candidate = new MessageReader.Candidate();
+                        boolean done = candidate.addLine(json);
+                        assertFalse(done);
                     });
             assertTrue(sstafException.getMessage().contains("Encountered extra '}'"));
         }
@@ -136,7 +149,9 @@ public class MessageReaderTest {
                         String json = "{\r\n[\r]\n]\r\n}}";
                         MessageReader messageReader = makeReader(json);
                         assertNotNull(messageReader);
-                        messageReader.scanAndCleanLine(json);
+                        MessageReader.Candidate candidate = new MessageReader.Candidate();
+                        boolean done = candidate.addLine(json);
+                        assertFalse(done);
                     });
             assertTrue(sstafException.getMessage().contains("Encountered extra '}'"));
         }
@@ -177,7 +192,7 @@ public class MessageReaderTest {
         @DisplayName("A sequence of complicated messages on multiple lines can be read")
         void testVeryComplicated() {
             assertDoesNotThrow(() -> {
-                String json = "{ \"x\" : 0,\n \"p\": \n [ \"a\" , \"b\" ] }\n"
+                String json = "{ \"x\" : 0,\n \"p\": \n [ \"a\" , \"b\" ] }\n\n\n\n\n\n"
                         + "{ \"x\" : 1,\n \"p\": \n [ \"a\" , \"b\" ] }\n"
                         + "{ \"x\" : 2,\n \"p\": \n [ \"a\" , \"b\" ] }\n"
                         + "{ \"x\" : 3,\n \"p\": \n [ \"a\" , \"b\" ] }\n"
@@ -186,14 +201,18 @@ public class MessageReaderTest {
                 assertNotNull(messageReader);
                 for (int i = 0; i < 5; ++i) {
                     String valid = messageReader.get();
-                    ObjectMapper om = new ObjectMapper();
-                    JsonNode tree = om.readTree(valid);
-                    assertTrue(tree.isObject());
-                    ObjectNode obj = (ObjectNode) tree;
-                    assertTrue(obj.has("x"));
-                    assertEquals(i, obj.get("x").asInt());
-                    assertTrue(tree.has("p"));
+                    if (valid.length() > 0) {
+                        ObjectMapper om = new ObjectMapper();
+                        JsonNode tree = om.readTree(valid);
+                        assertTrue(tree.isObject());
+                        ObjectNode obj = (ObjectNode) tree;
+                        assertTrue(obj.has("x"));
+                        assertEquals(i, obj.get("x").asInt());
+                        assertTrue(tree.has("p"));
+                    }
                 }
+                String shouldBeNull = messageReader.get();
+                assertNull(shouldBeNull);
             });
         }
     }

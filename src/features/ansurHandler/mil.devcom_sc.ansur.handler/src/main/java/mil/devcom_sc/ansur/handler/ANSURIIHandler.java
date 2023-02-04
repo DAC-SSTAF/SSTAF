@@ -192,7 +192,6 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
     @Override
     public ProcessingResult process(HandlerContent arg, long scheduledTime_ms, long currentTime_ms, Address from,
                                     long sequence, Address respondTo) {
-        System.err.println("WE'RE HERE - " + arg);
         if (arg instanceof GetValueMessage) {
             GetValueMessage msg = (GetValueMessage) arg;
             Objects.requireNonNull(msg.key);
@@ -201,20 +200,16 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
             ValueKey key = msg.key;
             builder.valueKey(key);
             if (key.getType().equals(String.class)) {
-                System.err.println("String query");
                 Optional<String> ov = getStringValue(key);
                 ov.ifPresent(builder::stringValue);
             } else if (key.getType().equals(Double.class)) {
-                System.err.println("Double query");
                 Optional<Double> ov = getDoubleValue(key);
                 ov.ifPresent(builder::doubleValue);
             } else if (key.getType().equals(Integer.class)) {
-                System.err.println("Integer query");
                 Optional<Integer> ov = getIntegerValue(key);
                 ov.ifPresent(builder::intValue);
             }
             GetValueResponse response = builder.build();
-            System.err.println("Response is " + response);
             Message out = buildNormalResponse(response, sequence, respondTo);
             return ProcessingResult.of(out);
         } else {

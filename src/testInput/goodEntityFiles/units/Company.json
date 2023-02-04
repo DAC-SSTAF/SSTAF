@@ -1,0 +1,35 @@
+{
+  "class" : "mil.sstaf.core.entity.Unit",
+  "name": "Test Platoon",
+  "type": "Platoon",
+  "features": [],
+  "configurations": {},
+  "soldiers": [
+    {
+      "position": "CC",
+      "soldier": "../soldiers/Soldier1.json"
+    },
+    {
+      "position": "DCC",
+      "soldier": "../soldiers/Soldier2.json"
+    },
+    {
+      "position": "G2",
+      "soldier": "../soldiers/Soldier3.json"
+    }
+  ],
+  "subUnits": [
+    {
+      "label": "1st Platoon",
+      "unit": "Platoon.json"
+    },
+    {
+      "label": "2nd Platoon",
+      "unit": "Platoon.json"
+    },
+    {
+      "label": "3rd Platoon",
+      "unit": "Platoon.json"
+    }
+  ]
+}
