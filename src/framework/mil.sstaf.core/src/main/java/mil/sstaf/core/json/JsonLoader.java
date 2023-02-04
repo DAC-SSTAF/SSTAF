@@ -56,7 +56,7 @@ public class JsonLoader {
         try {
             return objectMapper.treeToValue(jsonNode, asClass);
         } catch (Exception e) {
-            throw new SSTAFException("Could not read object '" + jsonNode.toPrettyString() + "'", e);
+            throw new SSTAFException("Could not read object '" + jsonNode.toPrettyString() + "'");
         }
     }
 
