@@ -6,19 +6,22 @@ import mil.sstaf.core.features.FeatureConfiguration;
 import mil.sstaf.core.features.FeatureSpecification;
 import mil.sstaf.pyagent.api.PyAgent;
 import mil.sstaftest.util.BaseFeatureIntegrationTest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled
+
 public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, FeatureConfiguration> {
 
-    private static final Logger logger = LoggerFactory.getLogger(PyAgentIntegrationTest.class);
 
     PyAgentIntegrationTest() {
         super(PyAgent.class, getSpec());
@@ -40,7 +43,7 @@ public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, 
                 "src" + File.separator +
                         "integrationTest" + File.separator +
                         "resources" + File.separator +
-                        "EmptyConfiguration.json");
+                        "PyAgentConfiguration.json");
     }
 
 
@@ -55,18 +58,30 @@ public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, 
                 pyAgent.configure(FeatureConfiguration.builder().build());
                 pyAgent.init();
 
-                List<String> args = List.of("Biscuits & Gravy", "Waffles", "French Toast", "Honey Nut Cheerios");
-                int sum = 0;
-                for (var s : args) {
-                    sum += s.length();
-                }
-                final int correct = sum;
+                List<String> args = List.of("Biscuits", "Gravy", "Waffles", "French", "Toast",
+                        "Honey", "Nut", "Cheerios");
+                int correct = getCorrect(args);
 
-                Assertions.assertDoesNotThrow(() -> {
-                    int result = pyAgent.countLetters(args);
-                    assertEquals(correct, result);
-                });
+
+                int result = pyAgent.countLetters(args);
+                assertEquals(correct, result);
+
+                args = List.of("Pooh", "Piglet", "Tigger", "Rabbit",
+                        "Kanga", "Roo");
+                correct = getCorrect(args);
+
+                result = pyAgent.countLetters(args);
+                assertEquals(correct, result);
+
             });
+        }
+
+        private int getCorrect(List<String> args) {
+            int sum = 0;
+            for (var s : args) {
+                sum += s.length();
+            }
+            return sum;
         }
     }
 }

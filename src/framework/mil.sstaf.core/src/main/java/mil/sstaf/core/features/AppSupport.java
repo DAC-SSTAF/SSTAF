@@ -210,7 +210,28 @@ public class AppSupport {
                 output.write(cmd);
                 if (!cmd.endsWith("\n")) output.write("\n");
                 output.flush();
-                return input.readLine();
+                return readLine();
+            }
+
+            private String readLine() throws IOException {
+                String read;
+                long start = System.currentTimeMillis();
+                long deltaT;
+                do {
+                  read = input.readLine();
+                  if (read == null) {
+                      try {
+                          Thread.sleep(50);
+                      } catch (InterruptedException e) {
+                          logger.debug("Interrupted!");
+                      }
+                      deltaT = System.currentTimeMillis() - start;
+                  } else {
+                      return read;
+                  }
+                } while (deltaT < 30000);
+                throw new SSTAFException("Did not receive a response in "
+                        + deltaT + " ms");
             }
 
             @Override

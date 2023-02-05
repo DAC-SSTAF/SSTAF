@@ -41,15 +41,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Contains global configuration information for the SSTAF environment.
- *
+ * <p>
  * {@code SSTAFConfiguration} provides a global environment for SSTAF, through
  * which other SSTAF components can access system-wide settings.
- *
+ * <p>
  * The motivation for {@code SSTAFConfiguration} was as to provide the ability
  * to creatie a root {@link ModuleLayer} for all SSTAF components. This root
  * layer is used to load SSTAF plugin modules and is the parent layer for the
  * {@code ModuleLayer}s that can be created for each {@code Entity}.
- *
+ * <p>
  * The location of the {@code SSTAFConfiguration} is specified through either
  * the {@code mil.sstaf.configuration} JVM property, or the
  * {@code SSTAF_CONFIGURATION} shell environment variable. The JVM property
@@ -60,27 +60,23 @@ import java.util.concurrent.locks.ReentrantLock;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
 public class SSTAFConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(SSTAFConfiguration.class);
-
     public static final String SSTAF_CONFIGURATION_PROPERTY = "mil.sstaf.configuration";
     public static final String SSTAF_CONFIGURATION_ENV = "SSTAF_CONFIGURATION";
+    private static final Logger logger = LoggerFactory.getLogger(SSTAFConfiguration.class);
+    private static final Lock lock = new ReentrantLock();
+    private static final AtomicReference<SSTAFConfiguration> instance = new AtomicReference<>();
     public static boolean requireConfiguration = false;
-
     @Getter
     @Builder.Default
     @JsonIgnore
     ModuleLayer rootLayer = null;
-
     @Getter
     private ModuleLayerDefinition moduleLayerDefinition;
-
-    private static final Lock lock = new ReentrantLock();
-    private static final AtomicReference<SSTAFConfiguration> instance = new AtomicReference<>();
 
     /**
      * Provides the {@code SSTAFConfiguration}, loading it if necessary.
      *
-     *  @return the SSTAFConfiguration
+     * @return the SSTAFConfiguration
      */
     public static SSTAFConfiguration getInstance() {
         lock.lock();
@@ -107,7 +103,6 @@ public class SSTAFConfiguration {
     }
 
     static SSTAFConfiguration loadConfiguration() {
-        File f;
         String defaultFilename = System.getProperty("user.home") + File.separator +
                 "SSTAFData" + File.separator + "config.json";
         String[] locations = {
@@ -143,11 +138,6 @@ public class SSTAFConfiguration {
         lock.unlock();
     }
 
-    protected void init() {
-        rootLayer = ModuleLayerSupport.makeModuleLayer(ModuleLayer.boot(),
-                moduleLayerDefinition, this.getClass().getClassLoader());
-    }
-
     private static SSTAFConfiguration from(File file) {
         JsonLoader loader = new JsonLoader();
         SSTAFConfiguration config = (SSTAFConfiguration) loader.load(Path.of(file.getAbsolutePath()));
@@ -161,6 +151,11 @@ public class SSTAFConfiguration {
         config.init();
         setInstance(config);
         return config;
+    }
+
+    protected void init() {
+        rootLayer = ModuleLayerSupport.makeModuleLayer(ModuleLayer.boot(),
+                moduleLayerDefinition, this.getClass().getClassLoader());
     }
 
 }

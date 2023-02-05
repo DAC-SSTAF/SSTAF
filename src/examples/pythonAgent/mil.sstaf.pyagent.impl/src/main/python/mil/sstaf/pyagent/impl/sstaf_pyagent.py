@@ -28,7 +28,7 @@ def send_result(msg):
 
 
 def send_error(seq_num, msg):
-    send_result(f"{seq_num} error: {msg}")
+    send_result(f"{seq_num} error {msg}")
 
 
 def make_bad_command_error(fields, msg):
@@ -41,13 +41,14 @@ def make_bad_command_error(fields, msg):
     err_msg = f"error: {msg}"
     return err_msg
 
+
 #
 # Lame example method
 #
 def count_letters(args):
-    count = 0;
-    for arg in args
-        count += len(arg);
+    count = 0
+    for arg in args:
+        count += len(arg)
     return count
 
 
@@ -64,8 +65,9 @@ def main():
         #
         try:
             if command == "count":
-                result = count_letters(args)
-                send_result(f"{seq_num} ok: sample {len(result)} {result}")
+                c = count_letters(args)
+                result = str(c)
+                send_result(f"{seq_num} ok count {len(result)} {result}")
             else:
                 send_error(seq_num, f"Unknown command '{command}'")
         except Exception as err:

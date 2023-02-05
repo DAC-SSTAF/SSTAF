@@ -9,8 +9,8 @@ import mil.sstaf.core.util.SSTAFException;
 import mil.sstaf.pyagent.api.PyAgent;
 import mil.sstaf.pyagent.messages.CountLettersRequest;
 import mil.sstaf.pyagent.messages.CountLettersResult;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -19,9 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PyAgentImpl extends BaseAgent implements PyAgent {
     private static final Logger logger = LoggerFactory.getLogger(PyAgentImpl.class);
-    AppAdapter pythonService;
-
     private final AtomicInteger requestCount = new AtomicInteger(0);
+    AppAdapter pythonService;
 
     /**
      * Features require a no-args constructor to be loaded by ServiceLoader.
@@ -71,6 +70,7 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
 
     /**
      * Tell the framework which messages this Feature accepts
+     *
      * @return the list of messages
      */
     @Override
@@ -80,6 +80,7 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
 
     /**
      * Generates common "front matter" for commands
+     *
      * @param command the command to execute
      * @return a partially-loaded StringBuilder
      */
@@ -105,23 +106,25 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
      *     Parsing the result String
      * </li>
      * </ol>
-     *
+     * <p>
      * This method dispatches a list of Strings to the Python app. The
      * application returns the sum of the length of each arg.
+     *
      * @param args the Strings to count
      * @return the total number of characters
      */
     @Override
     public int countLetters(List<String> args) {
+        int count = -1;
         //
         // Build the command String
         // The general form of commands to the Python script is
         // seqNumber command args...
         //
         StringBuilder sb = generatePrefix("count");
-        String s = "";
-        for (Iterator<String> it = args.iterator();it.hasNext(); s = it.next()) {
-            sb.append(s);
+
+        for (Iterator<String> it = args.iterator(); it.hasNext();) {
+            sb.append(it.next());
             sb.append(it.hasNext() ? ' ' : '\n');
         }
 
@@ -133,10 +136,13 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
             String result = session.invoke(sb.toString());
 
             String[] parsed = result.split(" ");
-            if (parsed.length != 2) {
-                throw new SSTAFException("Result string does not contain 2 fields. Got '"
+            if (parsed.length != 5) {
+                throw new SSTAFException("Result string does not contain 5 fields. Got '"
                         + result + "' ");
             }
+            //
+            // Check request ID
+            //
             int expected = requestCount.get() - 1;
             int responseID = Integer.parseInt(parsed[0]);
 
@@ -146,10 +152,16 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
                         expected + "]");
             }
 
-            return Integer.parseInt(parsed[1]);
-        } catch(IOException e) {
+            if ("ok".equals(parsed[1])) {
+                count = Integer.parseInt(parsed[4]);
+            } else if ("error".equals(parsed[1])) {
+                throw new SSTAFException("Request failed: got " + result);
+            }
+
+        } catch (IOException e) {
             throw new SSTAFException("Script invocation failed", e);
         }
+        return count;
     }
 
     @Override

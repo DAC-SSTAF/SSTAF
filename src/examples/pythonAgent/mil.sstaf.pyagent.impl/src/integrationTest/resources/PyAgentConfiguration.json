@@ -1,0 +1,11 @@
+{
+  "class": "mil.sstaf.core.configuration.SSTAFConfiguration",
+  "moduleLayerDefinition" : {
+    "modules": [
+      "mil.sstaf.pyagent.impl"
+    ],
+    "modulePaths": [
+      "../../../build/libs"
+    ]
+  }
+}
