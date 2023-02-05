@@ -66,6 +66,26 @@ public class AppSupport {
         TRANSIENT, DURABLE
     }
 
+    private static String readLine(BufferedReader reader, long timeout_ms ) throws IOException {
+        String read;
+        long start = System.currentTimeMillis();
+        long deltaT;
+        do {
+            read = reader.readLine();
+            if (read == null) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted!");
+                }
+                deltaT = System.currentTimeMillis() - start;
+            } else {
+                return read;
+            }
+        } while (deltaT < timeout_ms);
+        throw new SSTAFException("Did not receive a response in "
+                + deltaT + " ms");
+    }
 
     static class TransientAdapter implements AppAdapter {
         Logger logger = LoggerFactory.getLogger(AppSupport.TransientAdapter.class);
@@ -130,7 +150,7 @@ public class AppSupport {
                 output.write(cmd);
                 if (!cmd.endsWith("\n")) output.write("\n");
                 output.flush();
-                return input.readLine();
+                return readLine(input, 60000);
             }
 
             @Override
@@ -210,28 +230,7 @@ public class AppSupport {
                 output.write(cmd);
                 if (!cmd.endsWith("\n")) output.write("\n");
                 output.flush();
-                return readLine();
-            }
-
-            private String readLine() throws IOException {
-                String read;
-                long start = System.currentTimeMillis();
-                long deltaT;
-                do {
-                  read = input.readLine();
-                  if (read == null) {
-                      try {
-                          Thread.sleep(50);
-                      } catch (InterruptedException e) {
-                          logger.debug("Interrupted!");
-                      }
-                      deltaT = System.currentTimeMillis() - start;
-                  } else {
-                      return read;
-                  }
-                } while (deltaT < 30000);
-                throw new SSTAFException("Did not receive a response in "
-                        + deltaT + " ms");
+                return readLine(input, 30000);
             }
 
             @Override
