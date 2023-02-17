@@ -53,8 +53,8 @@ public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, 
         @Test
         @DisplayName("Check that python scripts install correctly and works")
         void test1() {
-            PyAgent pyAgent = loadAndResolveFeature();
             assertDoesNotThrow(() -> {
+                PyAgent pyAgent = loadAndResolveFeature();
                 pyAgent.configure(FeatureConfiguration.builder().build());
                 pyAgent.init();
 
