@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.opentest4j.AssertionFailedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ public class SSTAFAnalyzerIntegrationTest {
 
     static final String endSessionMsg = "{ \"class\" : \"mil.sstaf.analyzer.messages.Exit\" }\n";
     static final String getEntitiesMsg = "{ \"class\" : \"mil.sstaf.analyzer.messages.GetEntities\"}\n";
+
     static final boolean HEAVY = Boolean.getBoolean("HEAVY_TEST");
     private static final Logger logger = LoggerFactory.getLogger(SSTAFAnalyzerIntegrationTest.class);
     static Path extractedPath;
@@ -63,8 +65,8 @@ public class SSTAFAnalyzerIntegrationTest {
     /**
      * Unzip the zip file to the destination directory
      *
-     * @param zipFilePath
-     * @param destDir
+     * @param zipFilePath the path to the ZIP file
+     * @param destDir the directory into which the ZIP file will be unzipped
      */
     static void unzip(Path zipFilePath, Path destDir) throws IOException {
         File dir = destDir.toFile();
@@ -156,11 +158,10 @@ public class SSTAFAnalyzerIntegrationTest {
     }
 
     private static List<String> getBadEntityFiles() {
-        List<String> files = List.of(
+        return List.of(
                 Path.of(inputDir.toString(), "badEntityFiles", "emptyFile.json").toString(),
                 Path.of(inputDir.toString(), "badEntityFiles", "somethingOtherThanEntity.json").toString()
         );
-        return files;
     }
 
     private static void gotExpectedMessage(Process p, BufferedReader reader, String match) throws IOException, InterruptedException {
@@ -320,6 +321,70 @@ public class SSTAFAnalyzerIntegrationTest {
 
                 p.waitFor(10, TimeUnit.SECONDS);
             });
+        }
+
+        @Test
+        @DisplayName("Check John's ANSUR query")
+        void issue8TestBefore() {
+            assertThrows(AssertionFailedError.class, () -> {
+                String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                Process p = makeProcessWithArg(entityFile);
+                OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(osw);
+                InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                BufferedReader reader = new BufferedReader(isr);
+
+                sendMessage(writer, getEntitiesMsg);
+                gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                //
+                // Check provided command
+                //
+                String ansurQuery = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                        "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                        "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                        "\"content\":" +
+                        "{\"class\":\"mil.devcom_sc.ansur.messages.GetValueMessage\"," +
+                        "\"valueKey\":\"GENDER\"}}]," +
+                        "\"mode\":\"TICK\",\"time_ms\":2000}";
+                sendMessage(writer, ansurQuery);
+                gotExpectedMessage(p, reader, "TickResult");
+
+                p.waitFor(10, TimeUnit.SECONDS);
+            });
+        }
+
+        @Test
+        @DisplayName("Check the corrected ANSUR query")
+        void issue8TestCorrected() {
+            assertDoesNotThrow(
+                    () -> {
+                        String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                        Process p = makeProcessWithArg(entityFile);
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        BufferedWriter writer = new BufferedWriter(osw);
+                        InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                        BufferedReader reader = new BufferedReader(isr);
+
+                        sendMessage(writer, getEntitiesMsg);
+                        gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                        //
+                        // Check provided command
+                        //
+                        String ansurQuery = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.devcom_sc.ansur.messages.GetValueMessage\"," +
+                                "\"key\":\"GENDER\"}}]," +
+                                "\"mode\":\"TICK\",\"time_ms\":2000}";
+                        sendMessage(writer, ansurQuery);
+                        gotExpectedMessage(p, reader, "TickResult");
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
+                        p.waitFor(10, TimeUnit.SECONDS);
+                    });
         }
     }
 }
