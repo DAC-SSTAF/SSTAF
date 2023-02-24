@@ -35,7 +35,7 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
 @EqualsAndHashCode(callSuper = true)
 public class GetValueResponse extends HandlerContent {
-    private final ValueKey valueKey;
+    private final ValueKey key;
     private final String stringValue;
     private final double doubleValue;
     private final int intValue;
@@ -45,18 +45,18 @@ public class GetValueResponse extends HandlerContent {
      */
     private GetValueResponse(GetValueResponseBuilder<?,?> builder) {
         super(builder);
-        Objects.requireNonNull(builder.valueKey);
-        valueKey = builder.valueKey;
-        if (builder.valueKey.getType().equals(String.class)) {
+        Objects.requireNonNull(builder.key);
+        key = builder.key;
+        if (builder.key.getType().equals(String.class)) {
             Objects.requireNonNull(builder.stringValue);
             stringValue = builder.stringValue;
             doubleValue = Double.MIN_VALUE;
             intValue = Integer.MIN_VALUE;
-        } else if (builder.valueKey.getType().equals(Double.class)) {
+        } else if (builder.key.getType().equals(Double.class)) {
             doubleValue = builder.doubleValue;
             intValue = Integer.MIN_VALUE;
             stringValue = null;
-        } else if (builder.valueKey.getType().equals(Integer.class)) {
+        } else if (builder.key.getType().equals(Integer.class)) {
             intValue = builder.intValue;
             doubleValue = Double.MIN_VALUE;
             stringValue = null;
@@ -76,7 +76,7 @@ public class GetValueResponse extends HandlerContent {
         if (!valueKey.getType().equals(String.class)) {
             throw new SSTAFException("ValueKey type is not a String");
         }
-        return builder().valueKey(valueKey).stringValue(value).build();
+        return builder().key(valueKey).stringValue(value).build();
     }
 
     public static GetValueResponse of(final ValueKey valueKey, final double value) {
@@ -84,7 +84,7 @@ public class GetValueResponse extends HandlerContent {
         if (!valueKey.getType().equals(Double.class)) {
             throw new SSTAFException("ValueKey type is not a double");
         }
-        return builder().valueKey(valueKey).doubleValue(value).build();
+        return builder().key(valueKey).doubleValue(value).build();
     }
 
     public static GetValueResponse of(final ValueKey valueKey, final int value) {
@@ -92,7 +92,7 @@ public class GetValueResponse extends HandlerContent {
         if (! valueKey.getType().equals(Integer.class)) {
             throw new SSTAFException("ValueKey type is not a double");
         }
-        return builder().valueKey(valueKey).intValue(value).build();
+        return builder().key(valueKey).intValue(value).build();
     }
 
     /**
@@ -101,11 +101,11 @@ public class GetValueResponse extends HandlerContent {
      * @return an {@code Optional} containing the value or empty.
      */
     public Optional<Object> getValue() {
-        if (valueKey.getType().equals(String.class)) {
+        if (key.getType().equals(String.class)) {
            return Optional.of(stringValue);
-        } else if (valueKey.getType().equals(Double.class)) {
+        } else if (key.getType().equals(Double.class)) {
             return Optional.of(doubleValue);
-        } else if (valueKey.getType().equals(Integer.class)) {
+        } else if (key.getType().equals(Integer.class)) {
            return Optional.of(intValue);
         } else {
             return Optional.empty();
@@ -127,7 +127,7 @@ public class GetValueResponse extends HandlerContent {
      * @return an {@code Optional} containing the value or empty.
      */
     public Optional<Double> getDoubleValue() {
-        if (valueKey.getType().equals(Double.class)) {
+        if (key.getType().equals(Double.class)) {
             return Optional.of(doubleValue);
         } else {
             return Optional.empty();
@@ -140,7 +140,7 @@ public class GetValueResponse extends HandlerContent {
      * @return an {@code Optional} containing the value or empty.
      */
     public Optional<Integer> getIntegerValue() {
-        if (valueKey.getType().equals(Integer.class)) {
+        if (key.getType().equals(Integer.class)) {
             return Optional.of(intValue);
         } else {
             return Optional.empty();

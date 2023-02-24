@@ -49,8 +49,7 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
     /*
      * Keys
      */
-    public static final String CK_SUBJECT_ID = "subjectID";
-    public static final String CK_CONSTRAINTS = "constraints";
+
     public static final String FEATURE_NAME = "ANSUR Anthropometry";
     private Map<ValueKey, Object> subjectMap;
     private double height_cm = -1;
@@ -198,7 +197,7 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
             GetValueResponse.GetValueResponseBuilder<?,?> builder =
                     GetValueResponse.builder();
             ValueKey key = msg.key;
-            builder.valueKey(key);
+            builder.key(key);
             if (key.getType().equals(String.class)) {
                 Optional<String> ov = getStringValue(key);
                 ov.ifPresent(builder::stringValue);

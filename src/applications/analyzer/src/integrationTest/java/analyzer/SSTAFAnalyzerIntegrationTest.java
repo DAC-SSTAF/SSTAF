@@ -66,7 +66,7 @@ public class SSTAFAnalyzerIntegrationTest {
      * Unzip the zip file to the destination directory
      *
      * @param zipFilePath the path to the ZIP file
-     * @param destDir the directory into which the ZIP file will be unzipped
+     * @param destDir     the directory into which the ZIP file will be unzipped
      */
     static void unzip(Path zipFilePath, Path destDir) throws IOException {
         File dir = destDir.toFile();
@@ -216,6 +216,10 @@ public class SSTAFAnalyzerIntegrationTest {
     }
 
     private ProcessBuilder makeDefaultProcessBuilder(String arg) {
+        String cwdString = System.getProperty("user.dir");
+
+        Path errorPath = Path.of(cwdString, "build",
+                "tmp", "SSTAFAnalyzerIntegrationTest-stderr");
         ProcessBuilder processBuilder = new ProcessBuilder();
 
         String modulePath = makeModulePath();
@@ -228,7 +232,7 @@ public class SSTAFAnalyzerIntegrationTest {
             commandElements.add(arg);
         }
         processBuilder.command(commandElements);
-        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+        processBuilder.redirectError(ProcessBuilder.Redirect.appendTo(errorPath.toFile()));
         return processBuilder;
     }
 
@@ -326,6 +330,7 @@ public class SSTAFAnalyzerIntegrationTest {
         @Test
         @DisplayName("Check John's ANSUR query")
         void issue8TestBefore() {
+            logger.warn("********** EXPECT AN EXCEPTION!! **********");
             assertThrows(AssertionFailedError.class, () -> {
                 String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
                 Process p = makeProcessWithArg(entityFile);
