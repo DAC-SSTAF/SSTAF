@@ -10,12 +10,12 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
 @EqualsAndHashCode(callSuper = true)
-public class IntContent extends HandlerContent {
+public class DoubleContent extends HandlerContent {
 
     @Getter
-    private final int value;
+    private final double value;
 
-    public static IntContent of(int v) {
+    public static DoubleContent of(double v) {
         return builder().value(v).build();
     }
 }

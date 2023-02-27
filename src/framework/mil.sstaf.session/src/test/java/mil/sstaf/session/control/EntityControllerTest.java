@@ -68,7 +68,7 @@ class EntityControllerTest {
             assertEquals(1, allPaths.size());
             Command cmd = Command.builder().
                     recipientPath(allPaths.iterator().next().getPath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());
@@ -80,7 +80,7 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Event event = Event.builder()
                     .recipientPath(allPaths.iterator().next().getPath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .eventTime_ms(10000)
                     .build();
             entityController.submitEvent(event);
@@ -100,7 +100,7 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Command cmd = Command.builder()
                     .recipientPath(allPaths.iterator().next().getForcePath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());
@@ -121,7 +121,7 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Command cmd = Command.builder()
                     .recipientPath(allPaths.iterator().next().getForcePath())
-                    .content( StringContent.builder().message("This is a test").build())
+                    .content( StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());

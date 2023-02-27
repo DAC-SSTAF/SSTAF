@@ -61,21 +61,21 @@ class MessageQueueComparatorTest {
                 .eventTime_ms(10300)
                 .source(Address.makeExternalAddress(testEntity1.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity2.getHandle()))
-                .content(StringContent.builder().message("").build());
+                .content(StringContent.builder().value("").build());
         EntityEvent entityEvent1 = b1.build();
 
         var b2 = EntityEvent.builder();
         b2.eventTime_ms(15000);
         b2.source(Address.makeExternalAddress(testEntity1.getHandle()));
         b2.destination(Address.makeExternalAddress(testEntity2.getHandle()));
-        b2.content(StringContent.builder().message("").build());
+        b2.content(StringContent.builder().value("").build());
         EntityEvent entityEvent2 = b2.build();
 
         var b3 = EntityEvent.builder();
         b3.eventTime_ms(10300);
         b3.source(Address.makeExternalAddress(testEntity2.getHandle()));
         b3.destination(Address.makeExternalAddress(testEntity1.getHandle()));
-        b3.content(StringContent.builder().message("'").build());
+        b3.content(StringContent.builder().value("'").build());
         EntityEvent entityEvent3 = b3.build();
 
         assertEquals(-1, comp.compare(entityEvent1, entityEvent2));
@@ -110,21 +110,21 @@ class MessageQueueComparatorTest {
                 .eventTime_ms(0)
                 .source(Address.makeExternalAddress(testEntity1.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity2.getHandle()))
-                .content(StringContent.builder().message("").build());
+                .content(StringContent.builder().value("").build());
         EntityEvent entityEvent1 = b3.build();
 
         var b4 = EntityEvent.builder()
                 .eventTime_ms(5000)
                 .source(Address.makeExternalAddress(testEntity1.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity2.getHandle()))
-                .content(StringContent.builder().message("").build());
+                .content(StringContent.builder().value("").build());
         EntityEvent entityEvent2 = b4.build();
 
         var b5 = EntityEvent.builder()
                 .eventTime_ms(10300)
                 .source(Address.makeExternalAddress(testEntity2.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity1.getHandle()))
-                .content(StringContent.builder().message("").build());
+                .content(StringContent.builder().value("").build());
         EntityEvent entityEvent3 = b5.build();
 
         assertEquals(1, comp.compare(entityEvent1, err1));

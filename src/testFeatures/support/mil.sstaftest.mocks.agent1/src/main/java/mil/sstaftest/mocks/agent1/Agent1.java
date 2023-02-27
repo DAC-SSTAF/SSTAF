@@ -35,7 +35,7 @@ public class Agent1 extends BaseAgent {
     public ProcessingResult tick(long currentTime_ms) {
         lastTime_ms = currentTime_ms;
         count += 1;
-        Message m = buildNormalResponse(IntContent.builder().intValue(count).build(),
+        Message m = buildNormalResponse(IntContent.builder().value(count).build(),
                 0, Address.makeExternalAddress(ownerHandle));
         return ProcessingResult.of(m);
     }

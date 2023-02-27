@@ -126,7 +126,7 @@ class EntityTest {
                     @Override
                     public ProcessingResult process(HandlerContent arg, long scheduledTime_ms, long currentTime_ms, Address from, long id, Address respondTo) {
                         if (arg instanceof StringContent) {
-                            String string = ((StringContent) arg).getMessage();
+                            String string = ((StringContent) arg).getValue();
                             Message out = this.buildNormalResponse(StringContent.of(string), id, respondTo);
                             return ProcessingResult.of(out);
                         }
