@@ -145,7 +145,7 @@ public final class Session implements AutoCloseable {
      * @return an empty {@code SessionTickResult}
      */
     public SessionTickResult getEmptyTickResult() {
-        return SessionTickResult.builder().nextEventTime_ms(currentTime_ms).build();
+        return SessionTickResult.builder().nextEventTime_ms(entityController.getNextEventTime_ms()).build();
     }
 
 

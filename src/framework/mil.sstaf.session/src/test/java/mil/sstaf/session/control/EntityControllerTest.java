@@ -88,6 +88,24 @@ class EntityControllerTest {
         }
 
         @Test
+        @DisplayName("Confirm that next event time is calculated correctly")
+        void testUpcomingEvent() {
+            Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
+            Event event = Event.builder()
+                    .recipientPath(allPaths.iterator().next().getPath())
+                    .content(StringContent.builder().value("This is a test").build())
+                    .eventTime_ms(10000)
+                    .build();
+            entityController.submitEvent(event);
+            assertEquals(1, entityController.getSessionProxyQueueDepth(), "Queue depth before tick");
+            assertEquals(10000, entityController.getNextEventTime_ms());
+            SessionTickResult result = entityController.tick(5000);
+            assertEquals(10000, result.getNextEventTime_ms());
+            result = entityController.tick(10000);
+            assertEquals(Long.MAX_VALUE, result.getNextEventTime_ms());
+        }
+
+        @Test
         @DisplayName("Confirm that getSimulationEntityHandles() works as expected")
         void getAllEntityHandles() {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();

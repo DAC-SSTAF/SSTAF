@@ -391,6 +391,45 @@ public class SSTAFAnalyzerIntegrationTest {
                         p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
+
+        @Test
+        @DisplayName("Check the corrected nextEventTime_ms result after event is SUBMIT_ONLY")
+        void issue15TestCorrected() {
+            assertDoesNotThrow(
+                    () -> {
+                        String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                        Process p = makeProcessWithArg(entityFile);
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        BufferedWriter writer = new BufferedWriter(osw);
+                        InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                        BufferedReader reader = new BufferedReader(isr);
+
+                        sendMessage(writer, getEntitiesMsg);
+                        gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                        // Submit event for tick 2025 at tick 2000, make sure next event is at 2025
+                        String ansurQuery = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Event\"," +
+                                "\"eventTime_ms\":2025," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.devcom_sc.ansur.messages.GetValueMessage\"," +
+                                "\"key\":\"GENDER\"}}]," +
+                                "\"mode\":\"SUBMIT_ONLY\",\"time_ms\":2000}";
+                        sendMessage(writer, ansurQuery);
+                        gotExpectedMessage(p, reader, "\"nextEventTime_ms\":2025");
+
+                        // Tick to 2500, make sure next event is now Long.max
+                        String tickMessage = "{\"class\":\"mil.sstaf.analyzer.messages.Tick\"," +
+                                "\"time_ms\":2500}";
+                        sendMessage(writer, tickMessage);
+                        gotExpectedMessage(p, reader, "\"nextEventTime_ms\":9223372036854775807");
+
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
+                        p.waitFor(10, TimeUnit.SECONDS);
+                    });
+        }
     }
 }
 

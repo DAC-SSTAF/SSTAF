@@ -87,7 +87,7 @@ public final class EntityController extends BaseEntity {
 
     @Getter
     @Builder.Default
-    private long nextEventTime_ms = 0;
+    private long nextEventTime_ms = Long.MAX_VALUE;
 
     /**
      * Constructor
@@ -104,6 +104,7 @@ public final class EntityController extends BaseEntity {
         this.handle.setForce(Force.SYSTEM);
         this.runAgentsTasks = new ArrayList<>();
         this.processEventsTasks = new ArrayList<>();
+        this.nextEventTime_ms = Long.MAX_VALUE;
 
         this.registry = new EntityRegistry();
         this.registry.setClientAddress(clientProxy.getHandle());
@@ -216,6 +217,9 @@ public final class EntityController extends BaseEntity {
      */
     public void submitEvent(final Event event) {
         clientProxy.submitEvent(event);
+        // Issue #15 - update next event time
+        if (event.getEventTime_ms() < nextEventTime_ms && event.getEventTime_ms() > lastTickTime_ms)
+            nextEventTime_ms = event.getEventTime_ms();
     }
 
     /**
@@ -288,7 +292,7 @@ public final class EntityController extends BaseEntity {
         routeMessages();
 
         List<BaseSessionResult> toSession = getMessagesToSession();
-        long nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
+        nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
 
         return SessionTickResult.builder().nextEventTime_ms(nextEventTime_ms)
                 .messagesToClient(toSession)
@@ -330,7 +334,9 @@ public final class EntityController extends BaseEntity {
             }
             try {
                 long nt = fd.get();
-                minTime_ms = Math.min(minTime_ms, nt);
+                // Issue 15, ignore completed events
+                if (nt > getLastTickTime_ms())
+                    minTime_ms = Math.min(minTime_ms, nt);
             } catch (InterruptedException e) {
                 logger.error("Interrupted!");
                 e.printStackTrace();
