@@ -18,12 +18,9 @@
 package mil.sstaf.session.control;
 
 import mil.sstaf.core.entity.Address;
-import mil.sstaf.core.entity.Message;
 import mil.sstaf.core.features.BaseHandler;
 import mil.sstaf.core.features.HandlerContent;
 import mil.sstaf.core.features.ProcessingResult;
-import mil.sstaf.session.messages.GetEntitiesQuery;
-import mil.sstaf.session.messages.GetEntitiesResponse;
 
 import java.util.Objects;
 
@@ -33,20 +30,13 @@ public class EntityControllerHandler extends BaseHandler {
     private final EntityController entityController;
 
     protected EntityControllerHandler(EntityController ec) {
-        super("Entity Controller", 1, 0, 0, false, "Provides access to the EntityController via messages");
+        super("Entity Controller", 1, 0, 1, false, "Provides access to the EntityController via messages");
         entityController = Objects.requireNonNull(ec, "ec");
     }
 
     @Override
     public ProcessingResult process(HandlerContent arg, long scheduledTime_ms, long currentTime_ms, Address from, long id, Address respondTo) {
-        if (arg instanceof GetEntitiesQuery) {
-            var x = entityController.getEntities();
-            var c = GetEntitiesResponse.builder().entityMap(x).build();
-            Message out = buildNormalResponse(c, id, respondTo);
-            return ProcessingResult.of(out);
-        } else {
             return ProcessingResult.empty();
-        }
 
     }
 }
