@@ -109,7 +109,7 @@ public abstract class BaseHandler
                 .destination(destination)
                 .messageID(sourceID)
                 .sequenceNumber(this.ownerHandle.getMessageSequenceNumber())
-                .content(ExceptionCommand.builder().thrown(exception).build())
+                .content(ExceptionContent.builder().thrown(exception).build())
                 .errorDescription(desc);
         Message out = b.build();
         logger.trace("Entity {} sending {}", ownerHandle.getName(), out);
@@ -133,7 +133,7 @@ public abstract class BaseHandler
                 .destination(destination)
                 .messageID(sourceID)
                 .sequenceNumber(this.ownerHandle.getMessageSequenceNumber())
-                .content(ExceptionCommand.builder().thrown(exception).build())
+                .content(ExceptionContent.builder().thrown(exception).build())
                 .errorDescription(message);
         Message out = b.build();
         logger.trace("Entity {} sending {}", ownerHandle.getName(), out);

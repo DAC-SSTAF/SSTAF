@@ -219,8 +219,8 @@ class EntityTest {
         ErrorResponse er = (ErrorResponse) out.get(0);
         assertNotNull(er);
         assertNotNull(er.getContent());
-        assertEquals(ExceptionCommand.class, er.getContent().getClass());
-        ExceptionCommand exceptionContent = (ExceptionCommand) er.content;
+        assertEquals(ExceptionContent.class, er.getContent().getClass());
+        ExceptionContent exceptionContent = (ExceptionContent) er.content;
         assertNotNull(exceptionContent.getThrown());
         assertEquals(ERROR_MSG, exceptionContent.getThrown().getMessage());
         System.out.println(er.getErrorDescription());

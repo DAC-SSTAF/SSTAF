@@ -20,7 +20,7 @@ package mil.sstaf.blackboard.inmem;
 import lombok.experimental.SuperBuilder;
 import mil.sstaf.blackboard.api.*;
 import mil.sstaf.core.entity.*;
-import mil.sstaf.core.features.ExceptionCommand;
+import mil.sstaf.core.features.ExceptionContent;
 import mil.sstaf.core.features.Handler;
 import mil.sstaf.core.features.ProcessingResult;
 import mil.sstaf.core.entity.Message;
@@ -293,7 +293,7 @@ class BlackboardTest extends BaseHandlerTest<InMemBlackboard> {
             RemoveEntryResponse response3 = (RemoveEntryResponse) content3;
             assertEquals(0, response3.size);
 
-            ProcessingResult pr4 = handler.process(ExceptionCommand.builder().build(), 100000, 100000, address, 1, address);
+            ProcessingResult pr4 = handler.process(ExceptionContent.builder().build(), 100000, 100000, address, 1, address);
             Message mr4 = pr4.messages.get(0);
             assertTrue(mr4 instanceof ErrorResponse);
         }

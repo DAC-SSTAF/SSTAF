@@ -10,7 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
 @EqualsAndHashCode(callSuper = true)
-public class ExceptionCommand extends HandlerContent {
+public class ExceptionContent extends HandlerContent {
 
     @Getter
     private final Throwable thrown;

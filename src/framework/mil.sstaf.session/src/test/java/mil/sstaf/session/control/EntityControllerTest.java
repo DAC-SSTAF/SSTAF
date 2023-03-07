@@ -18,7 +18,7 @@
 package mil.sstaf.session.control;
 
 import mil.sstaf.core.entity.*;
-import mil.sstaf.core.features.ExceptionCommand;
+import mil.sstaf.core.features.ExceptionContent;
 import mil.sstaf.core.features.StringContent;
 import mil.sstaf.session.messages.Error;
 import mil.sstaf.session.messages.*;
@@ -148,7 +148,7 @@ class EntityControllerTest {
                     .errorDescription("It's broken")
                     .destination(Address.makeExternalAddress(unit.getHandle()))
                     .source(Address.makeExternalAddress(unit.getHandle()))
-                    .content(ExceptionCommand.builder().thrown(new Throwable()).build());
+                    .content(ExceptionContent.builder().thrown(new Throwable()).build());
             ErrorResponse er = b.build();
             BaseSessionResult sr = entityController.convertMessageToResult(er);
             assertNotNull(sr);
