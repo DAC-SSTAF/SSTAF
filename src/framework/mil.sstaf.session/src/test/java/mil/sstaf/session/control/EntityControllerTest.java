@@ -142,18 +142,21 @@ class EntityControllerTest {
         @Test
         @DisplayName("Confirm that an error message can be converted to a result.")
         void testConvertErrorMessageToResult() {
+            Throwable err = new java.lang.Error("Broken Exception");
             var b = ErrorResponse.builder()
                     .sequenceNumber(1234)
                     .messageID(3)
                     .errorDescription("It's broken")
                     .destination(Address.makeExternalAddress(unit.getHandle()))
                     .source(Address.makeExternalAddress(unit.getHandle()))
-                    .content(ExceptionContent.builder().thrown(new Throwable()).build());
+                    .content(ExceptionContent.builder().thrown(err).build());
             ErrorResponse er = b.build();
             BaseSessionResult sr = entityController.convertMessageToResult(er);
             assertNotNull(sr);
             assertTrue(sr instanceof Error);
             assertEquals("BLUE" + Entity.ENTITY_PATH_DELIMITER + "Bob", ((Error)sr).getEntityPath());
+            assertTrue(((Error) sr).getThrowable() instanceof java.lang.Error, "Wrong Throwable Object");
+            assertEquals("Broken Exception", ((Error) sr).getThrowable().getMessage(), "Wrong Throwable Message");
         }
     }
 

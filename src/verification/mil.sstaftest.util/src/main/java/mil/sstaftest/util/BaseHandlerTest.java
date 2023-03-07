@@ -174,7 +174,8 @@ abstract public class BaseHandlerTest<T extends Handler> extends BaseFeatureTest
                     "Content of ProcessingResult was not an ErrorResponse");
             assertTrue(((ErrorResponse) pr.messages.get(0)).getErrorDescription().contains("not supported"),
                     "ErrorResponse does not appear to be a 'not supported' error");
-
+            assertTrue(((ErrorResponse) pr.messages.get(0)).getThrowable() instanceof UnsupportedOperationException,
+                    "ErrorResponse throwable does not appear to be an UnsupportedOperationException error");
 
         }
     }

@@ -21,6 +21,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import mil.sstaf.core.features.ExceptionContent;
+import mil.sstaf.core.features.HandlerContent;
 
 /**
  * Message for conveying than an error has occurred.
@@ -34,8 +36,8 @@ public final class ErrorResponse extends MessageResponse {
     private final String errorDescription;
 
     public Throwable getThrowable() {
-        Object content = getContent();
-        if (content instanceof Throwable) return (Throwable) content;
+        HandlerContent contents = getContent();
+        if (contents instanceof ExceptionContent) return ((ExceptionContent) contents).getThrown();
         else return null;
     }
 }
