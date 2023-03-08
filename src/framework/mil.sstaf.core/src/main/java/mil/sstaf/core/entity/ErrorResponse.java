@@ -33,8 +33,6 @@ import mil.sstaf.core.features.HandlerContent;
 @Jacksonized
 public final class ErrorResponse extends MessageResponse {
 
-    private final String errorDescription;
-
     public Throwable getThrowable() {
         HandlerContent contents = getContent();
         if (contents instanceof ExceptionContent) return ((ExceptionContent) contents).getThrown();

@@ -19,10 +19,7 @@ package mil.sstaftest.util;
 
 import mil.sstaf.core.entity.Address;
 import mil.sstaf.core.entity.ErrorResponse;
-import mil.sstaf.core.features.Agent;
-import mil.sstaf.core.features.Handler;
-import mil.sstaf.core.features.HandlerContent;
-import mil.sstaf.core.features.ProcessingResult;
+import mil.sstaf.core.features.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -172,9 +169,13 @@ abstract public class BaseHandlerTest<T extends Handler> extends BaseFeatureTest
                     handler.getClass().getName() + ".process(UnsupportedMessage) returned empty ProcessingResult");
             assertTrue(pr.messages.get(0) instanceof ErrorResponse,
                     "Content of ProcessingResult was not an ErrorResponse");
-            assertTrue(((ErrorResponse) pr.messages.get(0)).getErrorDescription().contains("not supported"),
+            ErrorResponse er = (ErrorResponse) pr.messages.get(0);
+            ExceptionContent ec = (ExceptionContent) er.getContent();
+            assertTrue(ec.getErrorDescription().contains("not supported"),
                     "ErrorResponse does not appear to be a 'not supported' error");
-            assertTrue(((ErrorResponse) pr.messages.get(0)).getThrowable() instanceof UnsupportedOperationException,
+            assertTrue(ec.getThrown() instanceof UnsupportedOperationException,
+                    "ErrorContent throwable does not appear to be an UnsupportedOperationException error");
+            assertTrue(er.getThrowable() instanceof UnsupportedOperationException,
                     "ErrorResponse throwable does not appear to be an UnsupportedOperationException error");
 
         }

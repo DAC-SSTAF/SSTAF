@@ -431,8 +431,7 @@ public abstract class BaseEntity implements Entity {
                 .destination(destination)
                 .messageID(id)
                 .sequenceNumber(this.generateSequenceNumber())
-                .content(ExceptionContent.builder().thrown(exception).build())
-                .errorDescription(message);
+                .content(ExceptionContent.builder().errorDescription(message).thrown(exception).build());
         Message out = b.build();
         logger.trace("Entity {} sending {}", name, out);
         outboundQueue.offer(out);

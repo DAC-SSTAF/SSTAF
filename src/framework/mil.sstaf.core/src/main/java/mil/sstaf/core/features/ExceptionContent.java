@@ -13,6 +13,9 @@ import lombok.extern.jackson.Jacksonized;
 public class ExceptionContent extends HandlerContent {
 
     @Getter
+    private final String errorDescription;
+
+    @Getter
     private final Throwable thrown;
 
 }

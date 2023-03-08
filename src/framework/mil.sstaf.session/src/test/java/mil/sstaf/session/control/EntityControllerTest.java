@@ -148,10 +148,9 @@ class EntityControllerTest {
             var b = ErrorResponse.builder()
                     .sequenceNumber(1234)
                     .messageID(3)
-                    .errorDescription("It's broken")
                     .destination(Address.makeExternalAddress(unit.getHandle()))
                     .source(Address.makeExternalAddress(unit.getHandle()))
-                    .content(ExceptionContent.builder().thrown(err).build());
+                    .content(ExceptionContent.builder().errorDescription("It's broken").thrown(err).build());
             ErrorResponse er = b.build();
             BaseSessionResult sr = entityController.convertMessageToResult(er);
             assertNotNull(sr);
