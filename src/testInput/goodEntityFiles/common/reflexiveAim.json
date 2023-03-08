@@ -1,0 +1,93 @@
+{
+  "class" : "mil.devcom_dac.aim.dynamic.AimModel",
+  "aimErrorSD_h": [
+    4.0
+  ],
+  "aimErrorSD_v": [
+    4.0
+  ],
+  "aimErrorScaling_h": {
+    "a": 0.1,
+    "b": 0.2,
+    "k": 0.3,
+    "m": 0.4,
+    "n": 0.6,
+    "q": 1.0
+  },
+  "aimErrorScaling_v": {
+    "a": 0.1,
+    "b": 0.2,
+    "k": 0.3,
+    "m": 0.4,
+    "n": 0.6,
+    "q": 1.0
+  },
+  "aimErrorScaling_weights": {
+    "nondominantArmStrengthWeighting": 0.2,
+    "dominantArmStrengthWeighting": 0.3,
+    "pulseRatioWeighting": 0.0,
+    "respirationRatioWeighting": 0.0,
+    "cognitivePerformanceWeighting": 0.0,
+    "visionStateWeighting": 0.0
+  },
+  "aimDriftMedian_h": {
+    "a": 0.1,
+    "b": 0.2,
+    "k": 0.3,
+    "m": 0.4,
+    "n": 0.6,
+    "q": 1.0
+  },
+  "aimDriftMedian_v": {
+    "a": 0.1,
+    "b": 0.2,
+    "k": 0.3,
+    "m": 0.4,
+    "n": 0.6,
+    "q": 1.0
+  },
+  "aimDriftMedian_weights": {
+    "nondominantArmStrengthWeighting": 0.2,
+    "dominantArmStrengthWeighting": 0.3,
+    "pulseRatioWeighting": 0.0,
+    "respirationRatioWeighting": 0.0,
+    "cognitivePerformanceWeighting": 0.0,
+    "visionStateWeighting": 0.0
+  },
+  "aimDriftSD_h": [
+    0.23
+  ],
+  "aimDriftSD_v": [
+    0.278
+  ],
+  "aimDriftSD_weights": {
+    "nondominantArmStrengthWeighting": 0.2,
+    "dominantArmStrengthWeighting": 0.3,
+    "pulseRatioWeighting": 0.0,
+    "respirationRatioWeighting": 0.0,
+    "cognitivePerformanceWeighting": 0.0,
+
+    "visionStateWeighting": 0.0
+  },
+  "rangeEstimationErrorSD": [
+    0.1
+  ],
+  "rangeEstimationErrorSD_weights": {
+    "pulseRatioWeighting": 0.1,
+    "respirationRatioWeighting": 0.04,
+    "cognitivePerformanceWeighting": 0.2,
+    "visionStateWeighting": 0.5
+  },
+  "rangeCorrectionErrorSD_h": [
+    0.2
+  ],
+  "rangeCorrectionErrorSD_v": [
+    0.2
+  ],
+  "rangeCorrectionErrorSD_weights": {
+    "pulseRatioWeighting": 0.1,
+    "respirationRatioWeighting": 0.04,
+    "cognitivePerformanceWeighting": 0.2,
+    "visionStateWeighting": 0.5
+  }
+}

@@ -13,5 +13,9 @@ import lombok.extern.jackson.Jacksonized;
 public class IntContent extends HandlerContent {
 
     @Getter
-    private final int intValue;
+    private final int value;
+
+    public static IntContent of(int v) {
+        return builder().value(v).build();
+    }
 }

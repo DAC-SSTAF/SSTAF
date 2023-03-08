@@ -87,7 +87,7 @@ public final class EntityController extends BaseEntity {
 
     @Getter
     @Builder.Default
-    private long nextEventTime_ms = 0;
+    private long nextEventTime_ms = Long.MAX_VALUE;
 
     /**
      * Constructor
@@ -104,6 +104,7 @@ public final class EntityController extends BaseEntity {
         this.handle.setForce(Force.SYSTEM);
         this.runAgentsTasks = new ArrayList<>();
         this.processEventsTasks = new ArrayList<>();
+        this.nextEventTime_ms = Long.MAX_VALUE;
 
         this.registry = new EntityRegistry();
         this.registry.setClientAddress(clientProxy.getHandle());
@@ -166,7 +167,7 @@ public final class EntityController extends BaseEntity {
         // Need to set the seed for each entity here before init()ing
         //
         long subSeed = RNGUtilities.generateSubSeed(randomGenerator);
-        logger.info("Setting seed in {} to {}", entity.getName(), subSeed);
+        logger.debug("Setting seed in {} to {}", entity.getName(), subSeed);
         Injector.inject(entity, "randomSeed", subSeed);
         entity.injectInFeatures(registry);
         //
@@ -195,8 +196,8 @@ public final class EntityController extends BaseEntity {
         // Process messages
         //
         entity.processMessages(Long.MIN_VALUE);
-        if (logger.isInfoEnabled()) {
-            logger.info("Done configuring {}", entity.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Done configuring {}", entity.getName());
         }
     }
 
@@ -216,6 +217,9 @@ public final class EntityController extends BaseEntity {
      */
     public void submitEvent(final Event event) {
         clientProxy.submitEvent(event);
+        // Issue #15 - update next event time
+        if (event.getEventTime_ms() < nextEventTime_ms && event.getEventTime_ms() > lastTickTime_ms)
+            nextEventTime_ms = event.getEventTime_ms();
     }
 
     /**
@@ -288,7 +292,7 @@ public final class EntityController extends BaseEntity {
         routeMessages();
 
         List<BaseSessionResult> toSession = getMessagesToSession();
-        long nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
+        nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
 
         return SessionTickResult.builder().nextEventTime_ms(nextEventTime_ms)
                 .messagesToClient(toSession)
@@ -321,12 +325,18 @@ public final class EntityController extends BaseEntity {
      */
     private long getMinTime(List<Future<Long>> times) {
         long minTime_ms = Long.MAX_VALUE;
-        logger.info("times = {}", times);
+        if (logger.isDebugEnabled()) {
+            logger.debug("times = {}", times);
+        }
         for (Future<Long> fd : times) {
-            logger.info("fd = {}", fd);
+            if (logger.isDebugEnabled()) {
+                logger.debug("fd = {}", fd);
+            }
             try {
                 long nt = fd.get();
-                minTime_ms = Math.min(minTime_ms, nt);
+                // Issue 15, ignore completed events
+                if (nt > getLastTickTime_ms())
+                    minTime_ms = Math.min(minTime_ms, nt);
             } catch (InterruptedException e) {
                 logger.error("Interrupted!");
                 e.printStackTrace();
@@ -357,7 +367,9 @@ public final class EntityController extends BaseEntity {
      */
     private void routeFromMessageDriven(final Entity routeFrom) {
         List<Message> messages = routeFrom.takeOutbound();
-        logger.info("Routing messages from {}, got {} messages to route", routeFrom.getName(), messages.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Routing messages from {}, got {} messages to route", routeFrom.getName(), messages.size());
+        }
         messages.forEach(message -> {
             if (message == null) {
                 logger.warn("Message is null");
@@ -377,7 +389,9 @@ public final class EntityController extends BaseEntity {
      * Routes all messages from all entities
      */
     private void routeMessages() {
-        logger.info("Routing messages");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Routing messages");
+        }
         var allEntities = registry.getAllEntities();
         // split for debugging
         allEntities.forEach(this::routeFromMessageDriven);
@@ -499,14 +513,16 @@ public final class EntityController extends BaseEntity {
         }
 
         void setCurrentTime(final long currentTime_ms) {
-            logger.info("Updating time in RunAgentsCallable to {}", currentTime_ms);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Updating time in RunAgentsCallable to {}", currentTime_ms);
+            }
             this.currentTime_ms = currentTime_ms;
         }
 
         public Long call() {
-            logger.info("Invoking runAgents for {}", entity.getName());
+            logger.debug("Invoking runAgents for {}", entity.getName());
             long res = entity.runAgents(currentTime_ms);
-            logger.info("runAgents for {} returned {}", entity.getName(), res);
+            logger.debug("runAgents for {} returned {}", entity.getName(), res);
             return res;
         }
     }
@@ -520,12 +536,14 @@ public final class EntityController extends BaseEntity {
         }
 
         void setCurrentTime_ms(final long currentTime_ms) {
-            logger.info("Updating time in ProcessEventsCallable to {}", currentTime_ms);
+            logger.debug("Updating time in ProcessEventsCallable to {}", currentTime_ms);
             this.currentTime_ms = currentTime_ms;
         }
 
         public Long call() {
-            logger.info("Invoking processMessages for {}", entity.getName());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invoking processMessages for {}", entity.getName());
+            }
             long res = entity.processMessages(currentTime_ms);
             logger.debug("processMessages for {} returned {}", entity.getName(), res);
             return res;

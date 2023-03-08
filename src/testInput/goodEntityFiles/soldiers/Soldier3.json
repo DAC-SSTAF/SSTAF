@@ -1,0 +1,53 @@
+{
+  "class" : "mil.sstaf.core.entity.Soldier",
+  "name": "Slaughter",
+  "rank": "E5",
+  "moduleLayerDefinition": {
+    "modules": [
+      "mil.devcom_sc.ansur.api"
+    ],
+    "modulePaths": []
+  },
+  "features": [
+    {
+      "featureName": "Blackboard",
+      "majorVersion": 1,
+      "minorVersion": 0,
+      "requireExact": "false"
+    },
+    {
+      "featureName": "ANSUR Anthropometry",
+      "majorVersion": 0,
+      "minorVersion": 0,
+      "requireExact": "false"
+    },
+    {
+      "featureName": "Telemetry Agent",
+      "majorVersion": 0,
+      "minorVersion": 1,
+      "requireExact": "false"
+    }
+  ],
+  "configurations": {
+    "ANSUR Anthropometry": {
+      "class" : "mil.devcom_sc.ansur.api.ANSURConfiguration",
+      "constraints": [
+        {
+          "class" : "mil.devcom_sc.ansur.api.constraints.StringConstraint",
+          "propertyName": "Gender",
+          "matches" : "Female"
+        },
+        {
+          "class" : "mil.devcom_sc.ansur.api.constraints.IntegerConstraint",
+          "propertyName" : "weightkg",
+          "lowerBound" : 650
+        }
+      ]
+    },
+    "Santos Dynamics": {
+      "class" : "mil.sstaf.core.features.FeatureConfiguration"
+    },
+    "Telemetry Agent": "../common/telemetryConfig.json",
+    "Kit Manager": "../common/StandardKit.json"
+  }
+}

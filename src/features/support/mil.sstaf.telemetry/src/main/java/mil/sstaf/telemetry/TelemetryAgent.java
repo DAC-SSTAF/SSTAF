@@ -87,7 +87,7 @@ public class TelemetryAgent extends BaseAgent {
         super.init();
         try {
             File outputDir = makeOutputDir();
-            logger.info("Writing telemetry for '" + ownerHandle.getPath() + "' to " + outputDir.getPath());
+            logger.debug("Writing telemetry for '" + ownerHandle.getPath() + "' to " + outputDir.getPath());
             stateKeys.forEach(key -> writerMap.put(key, new StateWriter(key, outputDir)));
         } catch (FileNotFoundException e) {
             throw new SSTAFException(e);

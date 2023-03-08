@@ -55,7 +55,8 @@ configure(modules) {
 
     version = '1.0.0-SNAPSHOT'
 
-    String moduleName = getPath().split(":").last()
+    String path = getPath();
+    String moduleName = path.split(":").last()
     int splitPoint = moduleName.lastIndexOf('.')
     String pomGroupId = moduleName.substring(0, splitPoint)
     String pomArtifactId = moduleName.substring(splitPoint + 1)

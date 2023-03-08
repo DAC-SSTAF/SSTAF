@@ -49,8 +49,7 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
     /*
      * Keys
      */
-    public static final String CK_SUBJECT_ID = "subjectID";
-    public static final String CK_CONSTRAINTS = "constraints";
+
     public static final String FEATURE_NAME = "ANSUR Anthropometry";
     private Map<ValueKey, Object> subjectMap;
     private double height_cm = -1;
@@ -192,29 +191,29 @@ public class ANSURIIHandler extends BaseHandler implements ANSURIIAnthropometry 
     @Override
     public ProcessingResult process(HandlerContent arg, long scheduledTime_ms, long currentTime_ms, Address from,
                                     long sequence, Address respondTo) {
-        System.err.println("WE'RE HERE - " + arg);
         if (arg instanceof GetValueMessage) {
             GetValueMessage msg = (GetValueMessage) arg;
             Objects.requireNonNull(msg.key);
-            GetValueResponse.GetValueResponseBuilder<?,?> builder =
-                    GetValueResponse.builder();
+
             ValueKey key = msg.key;
-            builder.valueKey(key);
+            GetValueResponse response = GetValueResponse.of(ValueKey.SUBJECT_ID, -1);
             if (key.getType().equals(String.class)) {
-                System.err.println("String query");
                 Optional<String> ov = getStringValue(key);
-                ov.ifPresent(builder::stringValue);
+                if (ov.isPresent()) {
+                    response = GetValueResponse.of(key, ov.get());
+                }
             } else if (key.getType().equals(Double.class)) {
-                System.err.println("Double query");
                 Optional<Double> ov = getDoubleValue(key);
-                ov.ifPresent(builder::doubleValue);
+                if (ov.isPresent()) {
+                    response = GetValueResponse.of(key, ov.get());
+                }
             } else if (key.getType().equals(Integer.class)) {
-                System.err.println("Integer query");
                 Optional<Integer> ov = getIntegerValue(key);
-                ov.ifPresent(builder::intValue);
+                if (ov.isPresent()) {
+                    response = GetValueResponse.of(key, ov.get());
+                }
             }
-            GetValueResponse response = builder.build();
-            System.err.println("Response is " + response);
+
             Message out = buildNormalResponse(response, sequence, respondTo);
             return ProcessingResult.of(out);
         } else {

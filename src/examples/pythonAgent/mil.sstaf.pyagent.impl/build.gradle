@@ -1,0 +1,66 @@
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/python"
+        }
+    }
+    test {
+        resources {
+            srcDirs "src/test/resources", "src/main/python", "src/test/python"
+        }
+    }
+}
+
+dependencies {
+    implementation project(':examples:pythonAgent:mil.sstaf.pyagent.messages')
+    implementation project(':examples:pythonAgent:mil.sstaf.pyagent.api')
+    implementation project(':framework:mil.sstaf.core')
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    testImplementation project(':verification:mil.sstaftest.util')
+}
+
+
+testing {
+    suites {
+        integrationTest {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':examples:pythonAgent:mil.sstaf.pyagent.messages')
+                implementation project(':examples:pythonAgent:mil.sstaf.pyagent.api')
+                implementation project(':verification:mil.sstaftest.util')
+            }
+        }
+    }
+}
+
+jar {
+    manifest {
+        //
+        // This section compiles infomation about the resources,
+        // including python scripts, that is to be packaged with
+        // the module. These resources can be extracted to the
+        // file system using AppSupport.
+        //
+        def fileList = []
+        ['src/main/python', 'src/main/resource'].each { String dir ->
+            fileTree(dir) {
+                include '**/*.py'
+                include '**/*.json'
+                include '**/*.npz'
+            }.collect {
+                println(it.getPath())
+                relativePath(it)
+            }.each {
+                println(it)
+                def prefixLength = dir.length() + 1;
+                def trimmed = it.substring(prefixLength)
+                def corrected = trimmed.replace(File.separator, "/")
+                // Always a slash.
+                fileList << corrected
+                println(fileList)
+            }
+        }
+        attributes('SSTAF-Module': 'mil.sstaf.pyagent.impl')
+        attributes('SSTAF-Resources-To-Extract': fileList.join(' '))
+    }
+}

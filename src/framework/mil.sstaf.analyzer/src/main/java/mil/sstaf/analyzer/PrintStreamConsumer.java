@@ -40,12 +40,12 @@ public class PrintStreamConsumer implements Consumer<String> {
 
     @Override
     public void accept(String s) {
-
         String toSend = s + "\n";
-        logger.info("Writing {}", toSend);
+        logger.debug("Writing {}", toSend);
         outputWriter.println(toSend);
         outputWriter.flush();
         if (outputWriter.checkError()) {
+            logger.error("Error writing to print stream");
             throw new SSTAFException("Error writing message");
         }
     }

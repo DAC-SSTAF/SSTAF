@@ -13,9 +13,9 @@ import lombok.extern.jackson.Jacksonized;
 public class StringContent extends HandlerContent {
 
     @Getter
-    private final String message;
+    private final String value;
 
     public static StringContent of(String msg) {
-        return builder().message(msg).build();
+        return builder().value(msg).build();
     }
 }

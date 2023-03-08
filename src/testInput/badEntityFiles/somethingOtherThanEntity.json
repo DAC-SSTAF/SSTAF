@@ -1,0 +1,9 @@
+{
+  "type" : "4x2 plate",
+  "color": {
+    "red": 188,
+    "green": 17,
+    "blue": 213,
+    "alpha": 128
+  }
+}

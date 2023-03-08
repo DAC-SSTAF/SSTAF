@@ -18,7 +18,6 @@ integrationTest.dependsOn(':testFeatures:support:mil.sstaftest.mocks.pinky:copyJ
 testing {
     suites {
         integrationTest {
-
             dependencies {
                 implementation project(':framework:mil.sstaf.core')
                 implementation project(':testFeatures:integration:mil.sstaftest.simplemock')

@@ -43,7 +43,6 @@ public class JsonDeserializer implements Function<String, BaseAnalyzerCommand> {
 
     /**
      * Deserializes the {@code String} into a {@code SessionTas}.
-     *
      * A {@code SSTAFException} is thrown if the JSON can not be read into
      * a {@code BaseAnalyzerCommand}
      *
@@ -55,8 +54,8 @@ public class JsonDeserializer implements Function<String, BaseAnalyzerCommand> {
         try {
             return jsonLoader.load(jsonString, BaseAnalyzerCommand.class, fakeFile);
         } catch (Exception e) {
-            throw new SSTAFException("Could not convert '" + jsonString
-                    + "' into a BaseAnalyzerCommand");
+            throw new SSTAFException("Could not deserialize '" + jsonString
+                    + "' into a BaseAnalyzerCommand", e);
         }
     }
 }

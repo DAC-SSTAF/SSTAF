@@ -1,0 +1,26 @@
+{
+  "class" : "mil.sstaf.core.entity.Unit",
+  "name": "Test Unit",
+  "type": "FireTeam",
+  "features": [
+  ],
+  "configurations": {},
+  "soldiers": [
+    {
+      "position": "TL",
+      "soldier": "../soldiers/Soldier1.json"
+    },
+    {
+      "position": "R",
+      "soldier": "../soldiers/Soldier2.json"
+    },
+    {
+      "position": "G",
+      "soldier": "../soldiers/Soldier1.json"
+    },
+    {
+      "position": "AR",
+      "soldier": "../soldiers/Soldier2.json"
+    }
+  ]
+}

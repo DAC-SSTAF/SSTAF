@@ -68,7 +68,7 @@ class EntityControllerTest {
             assertEquals(1, allPaths.size());
             Command cmd = Command.builder().
                     recipientPath(allPaths.iterator().next().getPath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());
@@ -80,11 +80,29 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Event event = Event.builder()
                     .recipientPath(allPaths.iterator().next().getPath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .eventTime_ms(10000)
                     .build();
             entityController.submitEvent(event);
             assertEquals(1, entityController.getSessionProxyQueueDepth());
+        }
+
+        @Test
+        @DisplayName("Confirm that next event time is calculated correctly")
+        void testUpcomingEvent() {
+            Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
+            Event event = Event.builder()
+                    .recipientPath(allPaths.iterator().next().getPath())
+                    .content(StringContent.builder().value("This is a test").build())
+                    .eventTime_ms(10000)
+                    .build();
+            entityController.submitEvent(event);
+            assertEquals(1, entityController.getSessionProxyQueueDepth(), "Queue depth before tick");
+            assertEquals(10000, entityController.getNextEventTime_ms());
+            SessionTickResult result = entityController.tick(5000);
+            assertEquals(10000, result.getNextEventTime_ms());
+            result = entityController.tick(10000);
+            assertEquals(Long.MAX_VALUE, result.getNextEventTime_ms());
         }
 
         @Test
@@ -100,7 +118,7 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Command cmd = Command.builder()
                     .recipientPath(allPaths.iterator().next().getForcePath())
-                    .content(StringContent.builder().message("This is a test").build())
+                    .content(StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());
@@ -121,7 +139,7 @@ class EntityControllerTest {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
             Command cmd = Command.builder()
                     .recipientPath(allPaths.iterator().next().getForcePath())
-                    .content( StringContent.builder().message("This is a test").build())
+                    .content( StringContent.builder().value("This is a test").build())
                     .build();
             entityController.submitCommand(cmd);
             assertEquals(1, entityController.getSessionProxyQueueDepth());

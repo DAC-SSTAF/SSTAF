@@ -89,7 +89,8 @@ public class ResourceManager {
          if (is == null) {
             logger.error("Resource {} was not found in module {}", resourceName,
                     ownerModule.getName());
-            throw new IOException("Resource " + resourceName + " was not found");
+            throw new IOException("Resource '" + resourceName + "' was not found in module '"
+                    + ownerModule.getName() + "'");
         }
         Path path;
 
@@ -109,6 +110,7 @@ public class ResourceManager {
             String resourceNameLocalFS = resourceName.replaceAll("/", File.separator);
             path = Path.of(tempDir.toString(), resourceNameLocalFS);
         }
+        logger.warn("Extracting {} to {}", resourceName, path);
         Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
         return path.toFile();
     }

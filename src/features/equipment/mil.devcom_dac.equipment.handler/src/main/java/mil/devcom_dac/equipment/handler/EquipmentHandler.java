@@ -51,7 +51,8 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
 
     @Override
     public List<Class<? extends HandlerContent>> contentHandled() {
-        return List.of();
+        return List.of(GetInventory.class, Shoot.class,
+                Reload.class, SetGun.class);
     }
 
     @Override
