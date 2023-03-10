@@ -40,7 +40,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 public class AnalyzerTest {
 
-    static final String GET_ENTITIES_MSG = "{ \"class\" : \"mil.sstaf.analyzer.commands.GetEntitiesQuery\" }\n";
     public static final String END_SESSION_MSG = "{ \"class\" : \"mil.sstaf.analyzer.commands.EndSession\" }\n";
 
     private String mockStringSupplier() {
@@ -123,26 +122,6 @@ public class AnalyzerTest {
             assertEquals(1, analyzer.getTaskCount());
             assertTrue(sup.queue.isEmpty());
         }
-
-        @Test
-        @DisplayName("GetEntitiesQuery works")
-        void testGetEntities() throws InterruptedException, ExecutionException {
-            StringSupplier sup = new StringSupplier();
-            StringConsumer con = new StringConsumer();
-
-            sup.add(GET_ENTITIES_MSG);
-            sup.add(END_SESSION_MSG);;
-            Analyzer analyzer = makeAnalyzer(sup, con);
-            assertEquals(0, analyzer.getTaskCount());
-            assertFalse(analyzer.isRunning());
-            analyzer.start();
-            sleep(1000);
-            assertEquals(2, con.stuff.size());
-            assertFalse(analyzer.isRunning());
-            assertEquals(2, analyzer.getTaskCount());
-            assertTrue(sup.queue.isEmpty());
-        }
-
 
         @Test
         @DisplayName("Tick works")

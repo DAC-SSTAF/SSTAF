@@ -46,7 +46,7 @@ public class AppSupportTest {
             AppAdapter helper = AppSupport.createAdapter(config);
             ResourceManager resourceManager = helper.getResourceManager();
             File py = resourceManager.getResourceFiles().get("mil/sstaftest/simplemock/upper.py");
-            helper.setArgs(List.of("python3", py.getAbsolutePath()));
+            helper.setArgs(List.of("python", py.getAbsolutePath()));
             exerciseApplication(helper);
         });
     }
@@ -64,7 +64,7 @@ public class AppSupportTest {
             AppAdapter helper = AppSupport.createAdapter(config);
             ResourceManager resourceManager = helper.getResourceManager();
             File py = resourceManager.getResourceFiles().get("mil/sstaftest/simplemock/upper.py");
-            helper.setArgs(List.of("python3", py.getAbsolutePath()));
+            helper.setArgs(List.of("python", py.getAbsolutePath()));
 
             exerciseApplication(helper);
 
@@ -109,7 +109,7 @@ public class AppSupportTest {
         File py = resourceManager.getResourceFiles().get("mil/sstaftest/simplemock/args.py");
 
         final String bilbo = "Bilbo";
-        helper.setArgs(List.of("python3", py.getAbsolutePath(), bilbo));
+        helper.setArgs(List.of("python", py.getAbsolutePath(), bilbo));
 
         AppSession session = helper.activate();
         String arg0 = session.invoke("0");
@@ -119,7 +119,7 @@ public class AppSupportTest {
         Assertions.assertEquals(bilbo, arg1);
 
         final String frodo = "Frodo";
-        helper.setArgs(List.of("python3", py.getAbsolutePath(), frodo));
+        helper.setArgs(List.of("python", py.getAbsolutePath(), frodo));
 
         session = helper.activate();
         arg0 = session.invoke("0");
@@ -129,7 +129,7 @@ public class AppSupportTest {
         Assertions.assertEquals(frodo, arg1);
 
         final String sam = "Sam";
-        session = helper.activate(List.of("python3", py.getAbsolutePath(), sam));
+        session = helper.activate(List.of("python", py.getAbsolutePath(), sam));
         arg0 = session.invoke("0");
         Assertions.assertEquals(py.getAbsolutePath(), arg0);
 

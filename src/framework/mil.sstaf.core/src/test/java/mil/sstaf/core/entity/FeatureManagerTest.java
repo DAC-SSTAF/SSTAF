@@ -52,7 +52,7 @@ class FeatureManagerTest {
         final Handler h2 = new Handler2();
         featureManager.register(h1);
         featureManager.register(h2);
-        featureManager.getHandlerForContent(IntContent.builder().intValue(3).build()).ifPresentOrElse(s -> assertEquals(h2, s), () -> fail("Not found"));
+        featureManager.getHandlerForContent(IntContent.builder().value(3).build()).ifPresentOrElse(s -> assertEquals(h2, s), () -> fail("Not found"));
         featureManager.getHandlerForContent(StringContent.of("string")).ifPresentOrElse(s -> assertEquals(h1, s), () -> fail("Not found"));
         featureManager.getHandlerForContent(Command1.builder().build()).ifPresentOrElse(s -> assertEquals(h1, s), () -> fail("Not found"));
 
@@ -155,7 +155,7 @@ class FeatureManagerTest {
         b.destination(Address.makeExternalAddress(eh));
         b.source(Address.makeExternalAddress(eh));
         b.respondTo(Address.makeExternalAddress(eh));
-        b.content(IntContent.builder().intValue(3).build());
+        b.content(IntContent.builder().value(3).build());
         b.eventTime_ms(100);
         EntityEvent ee = b.build();
 
@@ -448,7 +448,7 @@ class FeatureManagerTest {
             b.destination(Address.makeExternalAddress(eh));
             b.source(Address.makeExternalAddress(eh));
             b.respondTo(Address.makeExternalAddress(eh));
-            b.content(IntContent.builder().intValue(3).build());
+            b.content(IntContent.builder().value(3).build());
             b.eventTime_ms(100);
             EntityEvent ee = b.build();
 

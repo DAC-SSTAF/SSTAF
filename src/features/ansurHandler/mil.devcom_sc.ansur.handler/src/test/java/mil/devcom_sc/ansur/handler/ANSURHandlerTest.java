@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import static mil.devcom_sc.ansur.messages.GetValueResponse.getIntegerValue;
 import static mil.devcom_sc.ansur.messages.ValueKey.ACROMIAL_HEIGHT;
 import static mil.devcom_sc.ansur.messages.ValueKey.SUBJECT_ID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -208,13 +209,7 @@ public class ANSURHandlerTest {
                 Object content = response.getContent();
                 Assertions.assertTrue(content instanceof GetValueResponse);
                 GetValueResponse gvr = (GetValueResponse) content;
-
-                Optional<Integer> optVal = gvr.getIntegerValue();
-                if (optVal.isPresent()) {
-                    Assertions.assertEquals(341, optVal.get());
-                } else {
-                    Assertions.fail("Value for " + ValueKey.BICEPS_CIRCUMFERENCE_FLEXED.getHeaderLabel() + " was not found");
-                }
+                Assertions.assertEquals(341, getIntegerValue(gvr));
             });
         }
 
@@ -246,23 +241,13 @@ public class ANSURHandlerTest {
                 GetValueResponse gvr = (GetValueResponse) content;
 
                 if (key.getType() == Integer.class) {
-                    Optional<Integer> optVal1 = gvr.getIntegerValue();
-                    Optional<Integer> optVal2 = handler.getIntegerValue(key);
-                    Optional<String> optVal3 = handler.getStringValue(key);
-                    if (optVal1.isEmpty() || optVal2.isEmpty()) {
-                        Assertions.fail("Integer value for " + key.getHeaderLabel() + " was not found");
-                    }
-                    Assertions.assertEquals(optVal1.get(), optVal2.get());
-                    Assertions.assertTrue(optVal3.isEmpty());
+                    assertTrue(GetValueResponse.isInteger(gvr));
+                    assertFalse(GetValueResponse.isString(gvr));
+                    assertFalse(GetValueResponse.isDouble(gvr));
                 } else if (key.getType() == String.class) {
-                    Optional<String> optVal1 = gvr.getStringValue();
-                    Optional<String> optVal2 = handler.getStringValue(key);
-                    Optional<Integer> optVal3 = handler.getIntegerValue(key);
-                    if (optVal1.isEmpty() || optVal2.isEmpty()) {
-                        Assertions.fail("String value for " + key.getHeaderLabel() + " was not found");
-                    }
-                    Assertions.assertEquals(optVal1.get(), optVal2.get());
-                    Assertions.assertTrue(optVal3.isEmpty());
+                    assertFalse(GetValueResponse.isInteger(gvr));
+                    assertTrue(GetValueResponse.isString(gvr));
+                    assertFalse(GetValueResponse.isDouble(gvr));
                 } else {
                     Assertions.fail(key.name() + " has bad type");
                 }

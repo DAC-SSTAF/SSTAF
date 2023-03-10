@@ -2,8 +2,16 @@
   "class" : "mil.sstaf.core.entity.Unit",
   "name": "Test Platoon",
   "type": "Platoon",
-  "features": [],
-  "configurations": {},
+  "features": [
+    {
+      "featureName": "Blackboard"
+    }
+  ],
+  "configurations": {
+    "Blackboard": {
+      "class": "mil.sstaf.core.features.FeatureConfiguration"
+    }
+  },
   "soldiers": [
     {
       "position": "PL",
