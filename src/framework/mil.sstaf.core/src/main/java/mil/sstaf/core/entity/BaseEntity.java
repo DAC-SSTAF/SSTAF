@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import mil.sstaf.core.features.ExceptionCommand;
+import mil.sstaf.core.features.ExceptionContent;
 import mil.sstaf.core.features.FeatureConfiguration;
 import mil.sstaf.core.features.FeatureSpecification;
 import mil.sstaf.core.features.ProcessingResult;
@@ -431,8 +431,7 @@ public abstract class BaseEntity implements Entity {
                 .destination(destination)
                 .messageID(id)
                 .sequenceNumber(this.generateSequenceNumber())
-                .content(ExceptionCommand.builder().thrown(exception).build())
-                .errorDescription(message);
+                .content(ExceptionContent.builder().errorDescription(message).thrown(exception).build());
         Message out = b.build();
         logger.trace("Entity {} sending {}", name, out);
         outboundQueue.offer(out);

@@ -30,7 +30,6 @@ import mil.sstaf.core.json.JsonLoader;
 import mil.sstaf.core.util.Injector;
 import mil.sstaf.core.util.RNGUtilities;
 import mil.sstaf.core.util.SSTAFException;
-import mil.sstaf.session.messages.Error;
 import mil.sstaf.session.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -398,23 +397,6 @@ public final class EntityController extends BaseEntity {
     }
 
     public BaseSessionResult convertMessageToResult(final MessageResponse response) {
-        if (response instanceof ErrorResponse) {
-            ErrorResponse errorResponse = (ErrorResponse) response;
-            return convertError(errorResponse);
-        } else {
-            return convertSuccess(response);
-        }
-    }
-
-    private Error convertError(final ErrorResponse errorResponse) {
-        return Error.builder()
-                .id(errorResponse.getMessageID())
-                .entityPath(errorResponse.getSource().entityHandle.getForcePath())
-                .throwable(errorResponse.getThrowable())
-                .build();
-    }
-
-    private BaseSessionResult convertSuccess(final MessageResponse response) {
         return CommandResult.builder()
                 .id(response.getMessageID())
                 .entityPath(response.getSource().entityHandle.getForcePath())
