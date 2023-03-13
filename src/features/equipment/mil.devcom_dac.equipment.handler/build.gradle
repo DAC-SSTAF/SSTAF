@@ -5,4 +5,24 @@ dependencies {
 }
 
 
+testing {
+    suites {
+        integrationTest {
+            dependencies {
+                implementation project(':framework:mil.sstaf.core')
+                implementation project(':testFeatures:integration:mil.sstaftest.simplemock')
+                implementation project(':testFeatures:integration:mil.sstaftest.jamesbond')
+                implementation project(':testFeatures:integration:mil.sstaftest.alpha')
+                implementation project(':testFeatures:integration:mil.sstaftest.bravo')
+                implementation project(':testFeatures:integration:mil.sstaftest.charlie')
+                implementation project(':testFeatures:integration:mil.sstaftest.delta')
+                implementation project(':testFeatures:integration:mil.sstaftest.echo')
+                implementation project(':testFeatures:support:mil.sstaftest.mocks.pinky')
 
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.handler1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.agent1')
+                runtimeOnly project(':testFeatures:support:mil.sstaftest.mocks.pinky')
+            }
+        }
+    }
+}
