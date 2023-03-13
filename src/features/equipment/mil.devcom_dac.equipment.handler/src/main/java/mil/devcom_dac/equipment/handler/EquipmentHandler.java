@@ -58,6 +58,9 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
     @Override
     public void init() {
         super.init();
+        if (currentGun.getMagazine() == null) {
+            kit.reload(currentGun);
+        }
     }
 
     /**
@@ -150,6 +153,9 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
         var builder = Inventory.builder();
         if (currentGun == null) {
             builder.currentGun("None");
+            builder.roundsInCurrentGun(0);
+        } else if (currentGun.getMagazine() == null){
+            builder.currentGun(currentGun.getName());
             builder.roundsInCurrentGun(0);
         } else {
             builder.currentGun(currentGun.getName());
