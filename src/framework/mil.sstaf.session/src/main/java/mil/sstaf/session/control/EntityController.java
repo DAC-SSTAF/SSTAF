@@ -123,6 +123,7 @@ public final class EntityController extends BaseEntity {
         this.clientProxy.setName("ClientProxy");
         this.clientProxy.setRegistry(registry);
         this.clientProxy.init();
+
         /*
          * Features running in the EntityController probably need access to the registry.
          */
@@ -376,6 +377,9 @@ public final class EntityController extends BaseEntity {
                 logger.warn("Message destination is null, source = {}, content = {}", message.getSource(), message.getContent());
             } else if (message.getDestination().equals(Address.NOWHERE)) {
                 logger.debug("Dropping message from {} to NOWHERE, contents = {}", message.getSource(), message.getContent().getClass());
+            } else if (message.getDestination().equals(Address.CLIENT)) {
+                logger.debug("Routing from {} to the client, contents = {}", message.getSource(),  message.getContent().getClass());
+                clientProxy.receive(message);
             } else {
                 logger.debug("Routing from {} to {}, contents = {}", message.getSource(), message.getDestination().entityHandle.getName(), message.getContent().getClass());
                 Optional<Entity> optionalEntity = registry.getEntityByHandle(message.getDestination().entityHandle);

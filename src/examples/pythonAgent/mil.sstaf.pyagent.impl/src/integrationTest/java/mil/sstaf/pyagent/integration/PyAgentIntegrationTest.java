@@ -2,8 +2,8 @@ package mil.sstaf.pyagent.integration;
 
 
 import mil.sstaf.core.configuration.SSTAFConfiguration;
-import mil.sstaf.core.features.FeatureConfiguration;
-import mil.sstaf.core.features.FeatureSpecification;
+import mil.sstaf.core.entity.Message;
+import mil.sstaf.core.features.*;
 import mil.sstaf.pyagent.api.PyAgent;
 import mil.sstaftest.util.BaseFeatureIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, FeatureConfiguration> {
@@ -82,6 +81,40 @@ public class PyAgentIntegrationTest extends BaseFeatureIntegrationTest<PyAgent, 
                 sum += s.length();
             }
             return sum;
+        }
+
+        @Test
+        @DisplayName("Check that tick works")
+        void testTick() {
+            assertDoesNotThrow(() -> {
+                PyAgent pyAgent = loadAndResolveFeature();
+                pyAgent.configure(FeatureConfiguration.builder().build());
+                pyAgent.init();
+
+                long tzero = System.currentTimeMillis();
+                long tzero_res = pyAgent.setTZero(tzero);
+
+                assertEquals(tzero, tzero_res);
+
+                double oldCapability = 1.0;
+
+                for (long time = tzero; time < tzero+1000000; time += 10000) {
+
+                    ProcessingResult pr = pyAgent.tick(time);
+                    assertEquals(1, pr.messages.size());
+                    Message m = pr.messages.get(0);
+                    HandlerContent hc = m.getContent();
+                    assertTrue (hc instanceof DoubleContent);
+                    DoubleContent dc = (DoubleContent) hc;
+                    double newCapability = dc.getValue();
+                    if (time == tzero) {
+                        assertEquals(oldCapability, newCapability);
+                    } else {
+                        assertTrue(oldCapability > newCapability);
+                    }
+                    oldCapability = newCapability;
+                }
+            });
         }
     }
 }

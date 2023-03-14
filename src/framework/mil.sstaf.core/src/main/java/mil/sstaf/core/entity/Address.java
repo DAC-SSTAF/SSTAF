@@ -70,6 +70,11 @@ public final class Address {
     public static final Address NOWHERE = Address.builder().entityHandle(null).handlerName("NOWHERE").build();
 
     /**
+     * A special {@code Address} that enables features to send outbound messages
+     * without knowing the Address of the ClientProxy. Used for messages
+     */
+    public static final Address CLIENT = Address.builder().entityHandle(null).handlerName("CLIENT").build();
+    /**
      * The handle to the {@code Entity} part of the address
      */
     public final EntityHandle entityHandle;

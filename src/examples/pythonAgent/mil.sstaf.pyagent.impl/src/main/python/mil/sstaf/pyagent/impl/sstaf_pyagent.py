@@ -27,8 +27,8 @@ def send_result(msg):
     sys.stdout.flush()
 
 
-def send_error(seq_num, msg):
-    send_result(f"{seq_num} error {msg}")
+def send_error(seq_num, msg, command):
+    send_result(f"{seq_num} command:{command} error:{msg}")
 
 
 def make_bad_command_error(fields, msg):
@@ -52,13 +52,35 @@ def count_letters(args):
     return count
 
 
+t_zero = 0
+
+def set_t_zero(args):
+    global t_zero
+    t_zero = int(args[0])
+    return t_zero
+
+
+def compute_capability(args):
+    t_now = int(args[0])
+    delta_t = t_now - t_zero
+    max_t = 18 * 3600 * 1000
+
+    capability = 1.0
+    if t_now <= t_zero:
+        capability = 1.0
+    else:
+        capability = 1 - (float(delta_t) / float(max_t))
+    return capability
+
+
 def main():
     #
     # Enter the main command processing loop.
     #
-    s = sys.stdin.readline().strip()
-    while s not in ['break', 'quit']:
-        seq_num, command, args = decompose_command(s)
+    input = sys.stdin.readline().strip()
+
+    while input not in ['break', 'quit']:
+        seq_num, command, args = decompose_command(input)
         #
         # Dispatch to appropriate method
         # I'm sure there is a more Pythonic way.
@@ -68,14 +90,22 @@ def main():
                 c = count_letters(args)
                 result = str(c)
                 send_result(f"{seq_num} ok count {len(result)} {result}")
+            elif command == "setTZero":
+                t0 = set_t_zero(args)
+                result = str(t0)
+                send_result(f"{seq_num} ok setTZero {len(result)} {result}")
+            elif command == "advanceClock":
+                capability = compute_capability(args)
+                result = str(capability)
+                send_result(f"{seq_num} ok advanceClock {len(result)} {result}")
             else:
                 send_error(seq_num, f"Unknown command '{command}'")
         except Exception as err:
-            send_error(seq_num, err)
+            send_error(seq_num, err, input)
         #
         # Read the next line.
         #
-        s = sys.stdin.readline().strip()
+        input = sys.stdin.readline().strip()
 
 
 if __name__ == "__main__":
