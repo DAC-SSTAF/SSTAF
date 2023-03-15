@@ -184,6 +184,27 @@ public class EquipmentHandlerTest {
         }
 
         @Test
+        @DisplayName("Confirm that Shoot message works if gun empties out")
+        public void shootTillEmptyTest() {
+            assertNotNull(equipmentManagement);
+            Reload reloadMsg = Reload.builder().gun("M16A1").build();
+            ProcessingResult x = equipmentManagement.process(reloadMsg, 1000, 1000,
+                    Address.NOWHERE, 1 , Address.NOWHERE);
+            assertNotNull(x);
+            assertEquals(1, x.messages.size());
+
+            Shoot msg = Shoot.builder().numToShoot(31).gun("M16A1").build();
+            x = equipmentManagement.process(msg, 1000, 1000,
+                    Address.NOWHERE, 1 , Address.NOWHERE);
+            assertNotNull(x);
+            assertEquals(1, x.messages.size());
+            GunState gs = (GunState) x.messages.get(0).getContent();
+            assertEquals(30, gs.getNumberShot());
+            assertEquals("M16A1", gs.getCurrentGun());
+            assertEquals(0, gs.getRoundsInCurrentGun());
+        }
+
+        @Test
         @DisplayName("Attempt to reload with no magazines left")
         public void reloadTest() {
             assertNotNull(equipmentManagement);
