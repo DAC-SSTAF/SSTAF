@@ -72,13 +72,14 @@ public class EquipmentHandlerTest {
             assertEquals(1, x.messages.size());
             Inventory inv = (Inventory) x.messages.get(0).getContent();
             assertEquals("M16A1", inv.getCurrentGun());
-            assertEquals(30, inv.getRoundsInCurrentGun());
+            assertEquals(0, inv.getRoundsInCurrentGun()); // not loaded
             assertEquals(14.46, inv.getTotalCarriedMass());
             assertEquals(2, inv.getGuns().size());
             assertTrue(inv.getGuns().containsKey("M16A1"));
             assertTrue(inv.getGuns().containsKey("M16A2"));
             assertEquals(1, inv.getMagazinesPerType().size());
             assertTrue(inv.getMagazinesPerType().containsKey("5.56mm STANAG"));
+            assertEquals(4, inv.getMagazinesPerType().get("5.56mm STANAG")); // not loaded, should be 4!
             assertEquals(1, inv.getRoundsPerType().size());
             assertTrue(inv.getRoundsPerType().containsKey("5.56mm STANAG"));
             assertEquals(1, inv.getPacks().size());
@@ -86,15 +87,25 @@ public class EquipmentHandlerTest {
         }
 
         @Test
-        @DisplayName("Confirm that Shoot message works without a current gun set")
+        @DisplayName("Confirm that Shoot message works")
         public void shootTest() {
             assertNotNull(equipmentManagement);
-            Shoot msg = Shoot.builder().numToShoot(1).gun("M16A1").build();
-            ProcessingResult x = equipmentManagement.process(msg, 1000, 1000,
+            Reload reloadMsg = Reload.builder().gun("M16A1").build();
+            ProcessingResult x = equipmentManagement.process(reloadMsg, 1000, 1000,
                     Address.NOWHERE, 1 , Address.NOWHERE);
             assertNotNull(x);
             assertEquals(1, x.messages.size());
             GunState gs = (GunState) x.messages.get(0).getContent();
+            assertEquals(0, gs.getNumberShot());
+            assertEquals("M16A1", gs.getCurrentGun());
+            assertEquals(30, gs.getRoundsInCurrentGun());  // gun now loaded
+
+            Shoot msg = Shoot.builder().numToShoot(1).gun("M16A1").build();
+            x = equipmentManagement.process(msg, 1000, 1000,
+                    Address.NOWHERE, 1 , Address.NOWHERE);
+            assertNotNull(x);
+            assertEquals(1, x.messages.size());
+            gs = (GunState) x.messages.get(0).getContent();
             assertEquals(1, gs.getNumberShot());
             assertEquals("M16A1", gs.getCurrentGun());
             assertEquals(29, gs.getRoundsInCurrentGun());
@@ -138,7 +149,7 @@ public class EquipmentHandlerTest {
             GunState gs = (GunState) x.messages.get(0).getContent();
             assertEquals(0, gs.getNumberShot());
             assertEquals("M16A2", gs.getCurrentGun());
-            assertEquals(30, gs.getRoundsInCurrentGun());
+            assertEquals(0, gs.getRoundsInCurrentGun()); // Gun not loaded by default
         }
     }
 
@@ -158,25 +169,18 @@ public class EquipmentHandlerTest {
         }
 
         @Test
-        @DisplayName("Attempt Shoot on gun that is not the current gun")
-        public void shootUnsetGunTest() {
+        @DisplayName("Confirm that Shoot message works without a current gun set (selected gun is unloaded)")
+        public void shootUnloadedTest() {
             assertNotNull(equipmentManagement);
-            SetGun setMsg = SetGun.builder().gun("M16A2").build();
-            ProcessingResult x = equipmentManagement.process(setMsg, 500, 500,
+            Shoot msg = Shoot.builder().numToShoot(1).gun("M16A1").build();
+            ProcessingResult x = equipmentManagement.process(msg, 1000, 1000,
                     Address.NOWHERE, 1 , Address.NOWHERE);
             assertNotNull(x);
             assertEquals(1, x.messages.size());
             GunState gs = (GunState) x.messages.get(0).getContent();
-            assertEquals(0, gs.getNumberShot());
-            assertEquals("M16A2", gs.getCurrentGun());
-            assertEquals(30, gs.getRoundsInCurrentGun());
-
-            Shoot msg = Shoot.builder().numToShoot(1).gun("M16A1").build();
-            Exception ex = assertThrows(SSTAFException.class, () -> {
-                ProcessingResult x2 = equipmentManagement.process(msg, 1000, 1000,
-                        Address.NOWHERE, 1 , Address.NOWHERE);
-            });
-            assertTrue(ex.getMessage().contains("Gun M8A1 was not found"));
+            assertEquals(0, gs.getNumberShot()); // gun not loaded
+            assertEquals("M16A1", gs.getCurrentGun());
+            assertEquals(0, gs.getRoundsInCurrentGun());
         }
 
         @Test
@@ -185,7 +189,7 @@ public class EquipmentHandlerTest {
             assertNotNull(equipmentManagement);
             Reload msg = Reload.builder().gun("M16A1").build();
             // Reload, magazines available.
-            for (int i =0; i<3; i++) {
+            for (int i =0; i<4; i++) {
                 ProcessingResult x = equipmentManagement.process(msg, 1000, 1000,
                         Address.NOWHERE, 1, Address.NOWHERE);
                 assertNotNull(x);
@@ -201,7 +205,7 @@ public class EquipmentHandlerTest {
                 ProcessingResult x2 = equipmentManagement.process(msg, 1000, 1000,
                         Address.NOWHERE, 1 , Address.NOWHERE);
             });
-            assertTrue(ex.getMessage().contains("TBD"));
+            assertTrue(ex.getMessage().contains("Gun M16A1 reload failed, no magazine of type 5.56mm STANAG available."));
         }
     }
 }
