@@ -3,6 +3,7 @@ package mil.devcom_dac.equipment.handler;
 import mil.devcom_dac.equipment.api.EquipmentConfiguration;
 import mil.devcom_dac.equipment.api.EquipmentManagement;
 import mil.devcom_dac.equipment.messages.*;
+import mil.devcom_sc.ansur.messages.ValueKey;
 import mil.sstaf.core.entity.Address;
 import mil.sstaf.core.entity.EntityHandle;
 import mil.sstaf.core.features.Loaders;
@@ -227,6 +228,18 @@ public class EquipmentHandlerTest {
                         Address.NOWHERE, 1 , Address.NOWHERE);
             });
             assertTrue(ex.getMessage().contains("Gun M16A1 reload failed, no magazine of type 5.56mm STANAG available."));
+        }
+
+        @Test
+        @DisplayName("Attempt to send an unsupported message")
+        public void invalidMessageTest() {
+            assertNotNull(equipmentManagement);
+            mil.devcom_sc.ansur.messages.GetValueMessage msg =
+                    mil.devcom_sc.ansur.messages.GetValueMessage.builder().key(ValueKey.AGE).build();
+               ProcessingResult x = equipmentManagement.process(msg, 1000, 1000,
+                        Address.NOWHERE, 1 , Address.NOWHERE);
+            assertNotNull(x);
+            assertEquals(1, x.messages.size());
         }
     }
 }
