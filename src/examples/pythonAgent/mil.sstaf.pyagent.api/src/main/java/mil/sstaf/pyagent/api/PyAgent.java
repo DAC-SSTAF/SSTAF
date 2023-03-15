@@ -21,5 +21,6 @@ import java.util.List;
 public interface PyAgent extends Agent {
 
     int countLetters(List<String> args);
+    long setTZero(long tZero);
 
 }
