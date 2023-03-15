@@ -328,6 +328,67 @@ public class SSTAFAnalyzerIntegrationTest {
         }
 
         @Test
+        @DisplayName("Check the AddEntryRequest, GetEntryRequest and RemoveEntryRequest blackboard commands")
+        void issue7TestCorrected() {
+            assertDoesNotThrow(
+                    () -> {
+                        String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                        Process p = makeProcessWithArg(entityFile);
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        BufferedWriter writer = new BufferedWriter(osw);
+                        InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                        BufferedReader reader = new BufferedReader(isr);
+
+                        sendMessage(writer, getEntitiesMsg);
+                        gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                        //
+                        // Check AddEntryRequest command
+                        //
+                        String bbCommand = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.sstaf.blackboard.api.AddEntryRequest\"," +
+                                "\"key\":\"Age\"," +
+                                "\"value\":{\"class\":\"mil.sstaf.core.features.IntContent\",\"value\":45},\"timestamp_ms\":1,\"expiration_ms\":100}}]," +
+                                "\"mode\":\"TICK\",\"time_ms\":1}";
+                        sendMessage(writer, bbCommand);
+                        gotExpectedMessage(p, reader, "AddEntryResponse");
+
+                        //
+                        // Check GetEntryRequest command
+                        //
+                        String bbCommand2 = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.sstaf.blackboard.api.GetEntryRequest\"," +
+                                "\"time_ms\":\"50\",\"type\":\"mil.sstaf.core.features.IntContent\",\"key\":\"Age\"}}]," +
+                                "\"mode\":\"TICK\",\"time_ms\":2}";
+                        sendMessage(writer, bbCommand2);
+                        gotExpectedMessage(p, reader, "GetEntryResponse");
+
+                        //
+                        // Check RemoveEntryRequest command
+                        //
+                        String bbCommand3 = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.sstaf.blackboard.api.RemoveEntryRequest\"," +
+                                "\"key\":\"Age\"}}]," +
+                                "\"mode\":\"TICK\",\"time_ms\":3}";
+                        sendMessage(writer, bbCommand3);
+                        gotExpectedMessage(p, reader, "RemoveEntryResponse");
+
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
+                        p.waitFor(10, TimeUnit.SECONDS);
+                    });
+        }
+
+        @Test
         @DisplayName("Check John's ANSUR query")
         void issue8TestBefore() {
             logger.warn("********** EXPECT AN EXCEPTION!! **********");
@@ -386,6 +447,45 @@ public class SSTAFAnalyzerIntegrationTest {
                                 "\"mode\":\"TICK\",\"time_ms\":2000}";
                         sendMessage(writer, ansurQuery);
                         gotExpectedMessage(p, reader, "TickResult");
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
+                        p.waitFor(10, TimeUnit.SECONDS);
+                    });
+        }
+
+        @Test
+        @DisplayName("Check the corrected nextEventTime_ms result after event is SUBMIT_ONLY")
+        void issue15TestCorrected() {
+            assertDoesNotThrow(
+                    () -> {
+                        String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                        Process p = makeProcessWithArg(entityFile);
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        BufferedWriter writer = new BufferedWriter(osw);
+                        InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                        BufferedReader reader = new BufferedReader(isr);
+
+                        sendMessage(writer, getEntitiesMsg);
+                        gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                        // Submit event for tick 2025 at tick 2000, make sure next event is at 2025
+                        String ansurQuery = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Event\"," +
+                                "\"eventTime_ms\":2025," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.devcom_sc.ansur.messages.GetValueMessage\"," +
+                                "\"key\":\"GENDER\"}}]," +
+                                "\"mode\":\"SUBMIT_ONLY\",\"time_ms\":2000}";
+                        sendMessage(writer, ansurQuery);
+                        gotExpectedMessage(p, reader, "\"nextEventTime_ms\":2025");
+
+                        // Tick to 2500, make sure next event is now Long.max
+                        String tickMessage = "{\"class\":\"mil.sstaf.analyzer.messages.Tick\"," +
+                                "\"time_ms\":2500}";
+                        sendMessage(writer, tickMessage);
+                        gotExpectedMessage(p, reader, "\"nextEventTime_ms\":9223372036854775807");
+
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
                         p.waitFor(10, TimeUnit.SECONDS);

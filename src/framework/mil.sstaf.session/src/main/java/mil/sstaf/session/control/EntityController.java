@@ -30,7 +30,6 @@ import mil.sstaf.core.json.JsonLoader;
 import mil.sstaf.core.util.Injector;
 import mil.sstaf.core.util.RNGUtilities;
 import mil.sstaf.core.util.SSTAFException;
-import mil.sstaf.session.messages.Error;
 import mil.sstaf.session.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +86,7 @@ public final class EntityController extends BaseEntity {
 
     @Getter
     @Builder.Default
-    private long nextEventTime_ms = 0;
+    private long nextEventTime_ms = Long.MAX_VALUE;
 
     /**
      * Constructor
@@ -104,6 +103,7 @@ public final class EntityController extends BaseEntity {
         this.handle.setForce(Force.SYSTEM);
         this.runAgentsTasks = new ArrayList<>();
         this.processEventsTasks = new ArrayList<>();
+        this.nextEventTime_ms = Long.MAX_VALUE;
 
         this.registry = new EntityRegistry();
         this.registry.setClientAddress(clientProxy.getHandle());
@@ -123,6 +123,7 @@ public final class EntityController extends BaseEntity {
         this.clientProxy.setName("ClientProxy");
         this.clientProxy.setRegistry(registry);
         this.clientProxy.init();
+
         /*
          * Features running in the EntityController probably need access to the registry.
          */
@@ -216,6 +217,9 @@ public final class EntityController extends BaseEntity {
      */
     public void submitEvent(final Event event) {
         clientProxy.submitEvent(event);
+        // Issue #15 - update next event time
+        if (event.getEventTime_ms() < nextEventTime_ms && event.getEventTime_ms() > lastTickTime_ms)
+            nextEventTime_ms = event.getEventTime_ms();
     }
 
     /**
@@ -288,7 +292,7 @@ public final class EntityController extends BaseEntity {
         routeMessages();
 
         List<BaseSessionResult> toSession = getMessagesToSession();
-        long nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
+        nextEventTime_ms = Long.min(getMinTime(nextTimes1), getMinTime(nextTimes2));
 
         return SessionTickResult.builder().nextEventTime_ms(nextEventTime_ms)
                 .messagesToClient(toSession)
@@ -330,7 +334,9 @@ public final class EntityController extends BaseEntity {
             }
             try {
                 long nt = fd.get();
-                minTime_ms = Math.min(minTime_ms, nt);
+                // Issue 15, ignore completed events
+                if (nt > getLastTickTime_ms())
+                    minTime_ms = Math.min(minTime_ms, nt);
             } catch (InterruptedException e) {
                 logger.error("Interrupted!");
                 e.printStackTrace();
@@ -371,6 +377,9 @@ public final class EntityController extends BaseEntity {
                 logger.warn("Message destination is null, source = {}, content = {}", message.getSource(), message.getContent());
             } else if (message.getDestination().equals(Address.NOWHERE)) {
                 logger.debug("Dropping message from {} to NOWHERE, contents = {}", message.getSource(), message.getContent().getClass());
+            } else if (message.getDestination().equals(Address.CLIENT)) {
+                logger.debug("Routing from {} to the client, contents = {}", message.getSource(),  message.getContent().getClass());
+                clientProxy.receive(message);
             } else {
                 logger.debug("Routing from {} to {}, contents = {}", message.getSource(), message.getDestination().entityHandle.getName(), message.getContent().getClass());
                 Optional<Entity> optionalEntity = registry.getEntityByHandle(message.getDestination().entityHandle);
@@ -392,23 +401,6 @@ public final class EntityController extends BaseEntity {
     }
 
     public BaseSessionResult convertMessageToResult(final MessageResponse response) {
-        if (response instanceof ErrorResponse) {
-            ErrorResponse errorResponse = (ErrorResponse) response;
-            return convertError(errorResponse);
-        } else {
-            return convertSuccess(response);
-        }
-    }
-
-    private Error convertError(final ErrorResponse errorResponse) {
-        return Error.builder()
-                .id(errorResponse.getMessageID())
-                .entityPath(errorResponse.getSource().entityHandle.getForcePath())
-                .throwable(errorResponse.getThrowable())
-                .build();
-    }
-
-    private BaseSessionResult convertSuccess(final MessageResponse response) {
         return CommandResult.builder()
                 .id(response.getMessageID())
                 .entityPath(response.getSource().entityHandle.getForcePath())

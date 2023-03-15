@@ -148,7 +148,7 @@ public class FeatureManager {
         if (content == null) {
             var b = ErrorResponse.builder();
             b.source(Address.makeAddress(owner, "FeatureManager"));
-            b.errorDescription("Message content was null");
+            b.content(ExceptionContent.builder().errorDescription("Message content was null").build());
             b.destination(message.getRespondTo());
             b.sequenceNumber(messageCounter.getAndIncrement());
             b.messageID(message.getSequenceNumber());
@@ -165,11 +165,11 @@ public class FeatureManager {
         Handler handler = getHandler(content.getClass(), message.getDestination().handlerName);
 
         if (handler == null) {
-            if (content instanceof ExceptionCommand) {
+            if (content instanceof ExceptionContent) {
                 //
                 // default handling for error messages.
                 //
-                Throwable t = ((ExceptionCommand) content).getThrown();
+                Throwable t = ((ExceptionContent) content).getThrown();
                 logger.error("Received throwable from " + message.getSource().toString(), t);
                 return ProcessingResult.empty();
             } else {
@@ -179,8 +179,7 @@ public class FeatureManager {
                 b.sequenceNumber(messageCounter.getAndIncrement());
                 b.messageID(message.getSequenceNumber());
                 String msg = "No handler for message of type " + content.getClass().getName();
-                b.errorDescription(msg);
-                b.content(ExceptionCommand.builder().thrown(new SSTAFException(msg)).build());
+                b.content(ExceptionContent.builder().errorDescription(msg).thrown(new SSTAFException(msg)).build());
                 logger.error(
                         "\tIn {}, No handler for message of type {}, received from {}\n" +
                                 "\tTypes handled are {}\n" +

@@ -17,7 +17,7 @@
 
 package mil.sstaf.core.entity;
 
-import mil.sstaf.core.features.ExceptionCommand;
+import mil.sstaf.core.features.ExceptionContent;
 import mil.sstaf.core.features.StringContent;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ class MessageQueueComparatorTest {
         testEntity2.setForce(Force.BLUE);
 
         var b1 = ErrorResponse.builder()
-                .content(ExceptionCommand.builder().thrown(new Throwable()).build())
+                .content(ExceptionContent.builder().thrown(new Throwable()).build())
                 .source(Address.makeExternalAddress(testEntity1.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity2.getHandle()));
         var err1 = b1.build();
@@ -42,7 +42,7 @@ class MessageQueueComparatorTest {
         var b2 = ErrorResponse.builder()
                 .source(Address.makeExternalAddress(testEntity2.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity1.getHandle()))
-                .content(ExceptionCommand.builder().thrown(new Throwable()).build());
+                .content(ExceptionContent.builder().thrown(new Throwable()).build());
         var err2 = b2.build();
 
         assertEquals(-1, comp.compare(err1, err2));
@@ -95,13 +95,13 @@ class MessageQueueComparatorTest {
         testEntity2.setForce(Force.BLUE);
 
         var b1 = ErrorResponse.builder()
-                .content(ExceptionCommand.builder().thrown(new Throwable()).build())
+                .content(ExceptionContent.builder().thrown(new Throwable()).build())
                 .source(Address.makeExternalAddress(testEntity1.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity2.getHandle()));
         ErrorResponse err1 = b1.build();
 
         var b2 = ErrorResponse.builder()
-                .content(ExceptionCommand.builder().thrown(new Throwable()).build())
+                .content(ExceptionContent.builder().thrown(new Throwable()).build())
                 .source(Address.makeExternalAddress(testEntity2.getHandle()))
                 .destination(Address.makeExternalAddress(testEntity1.getHandle()));
         ErrorResponse err2 = b2.build();

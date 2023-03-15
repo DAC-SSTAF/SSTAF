@@ -9,6 +9,7 @@ import mil.sstaf.core.util.SSTAFException;
 import mil.sstaf.pyagent.api.PyAgent;
 import mil.sstaf.pyagent.messages.CountLettersRequest;
 import mil.sstaf.pyagent.messages.CountLettersResult;
+import mil.sstaf.pyagent.messages.SetTZero;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,9 +165,97 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
         return count;
     }
 
+    public long setTZero(long tZero) {
+        //
+        // Invoke and process result
+        //
+        long tZero_x = 0;
+        try {
+            String command = generatePrefix("setTZero")
+                    .append(tZero).toString();
+            logger.warn(command);
+            AppSession session = pythonService.activate();
+            String result = session.invoke(command);
+            logger.warn(result);
+
+            String[] parsed = result.split(" ");
+            if (parsed.length != 5) {
+                throw new SSTAFException("Result string does not contain 5 fields. Got '"
+                        + result + "' ");
+            }
+            //
+            // Check request ID
+            //
+            int expected = requestCount.get() - 1;
+            int responseID = Integer.parseInt(parsed[0]);
+
+            if (responseID != expected) {
+                throw new SSTAFException("Response ID [" +
+                        responseID + "] did not match expected value [" +
+                        expected + "]");
+            }
+
+            if ("ok".equals(parsed[1])) {
+                tZero_x = Long.parseLong(parsed[4]);
+            } else if ("error".equals(parsed[1])) {
+                throw new SSTAFException("Request failed: got " + result);
+            }
+
+        } catch (IOException e) {
+            throw new SSTAFException("Script invocation failed", e);
+        }
+        return tZero_x;
+    }
+
+    private double advanceTheClockInPython(long currentTime_ms) {
+        //
+        // Invoke and process result
+        //
+        double capability = 0.0;
+        try {
+            String command = generatePrefix("advanceClock")
+                    .append(currentTime_ms).toString();
+            logger.warn(command);
+            AppSession session = pythonService.activate();
+            String result = session.invoke(command);
+            logger.warn(result);
+            String[] parsed = result.split(" ");
+            if (parsed.length != 5) {
+                throw new SSTAFException("Result string does not contain 5 fields. Got '"
+                        + result + "' ");
+            }
+            //
+            // Check request ID
+            //
+            int expected = requestCount.get() - 1;
+            int responseID = Integer.parseInt(parsed[0]);
+
+            if (responseID != expected) {
+                throw new SSTAFException("Response ID [" +
+                        responseID + "] did not match expected value [" +
+                        expected + "]");
+            }
+
+            if ("ok".equals(parsed[1])) {
+                capability = Double.parseDouble(parsed[4]);
+            } else if ("error".equals(parsed[1])) {
+                throw new SSTAFException("Request failed: got " + result);
+            }
+
+        } catch (IOException e) {
+            throw new SSTAFException("Script invocation failed", e);
+        }
+        return capability;
+    }
+
     @Override
     public ProcessingResult tick(long currentTime_ms) {
-        return null;
+        double capability = advanceTheClockInPython(currentTime_ms);
+        DoubleContent dc = DoubleContent.builder().value(capability).build();
+        return ProcessingResult.of(List.of(
+                buildNormalResponse(dc,currentTime_ms, Address.CLIENT)
+                // Additional messages & events to other entities or the client
+        ));
     }
 
     @Override
@@ -177,6 +266,11 @@ public class PyAgentImpl extends BaseAgent implements PyAgent {
             int count = countLetters(request.getArgs());
             CountLettersResult clr = CountLettersResult.builder().count(count).build();
             return ProcessingResult.of(buildNormalResponse(clr, id, respondTo));
+        } else if (o instanceof SetTZero) {
+            SetTZero request = (SetTZero) o;
+            long res = setTZero(request.getTZero());
+            LongContent lc = LongContent.builder().longValue(res).build();
+            return ProcessingResult.of(buildNormalResponse(lc, id, respondTo));
         } else {
             throw new SSTAFException("Unrecognized command: " + o.toString());
         }

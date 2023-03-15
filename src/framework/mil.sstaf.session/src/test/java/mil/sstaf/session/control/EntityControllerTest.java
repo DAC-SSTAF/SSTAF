@@ -18,9 +18,9 @@
 package mil.sstaf.session.control;
 
 import mil.sstaf.core.entity.*;
-import mil.sstaf.core.features.ExceptionCommand;
+import mil.sstaf.core.features.ExceptionContent;
+import mil.sstaf.core.features.HandlerContent;
 import mil.sstaf.core.features.StringContent;
-import mil.sstaf.session.messages.Error;
 import mil.sstaf.session.messages.*;
 import org.junit.jupiter.api.*;
 
@@ -88,6 +88,24 @@ class EntityControllerTest {
         }
 
         @Test
+        @DisplayName("Confirm that next event time is calculated correctly")
+        void testUpcomingEvent() {
+            Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
+            Event event = Event.builder()
+                    .recipientPath(allPaths.iterator().next().getPath())
+                    .content(StringContent.builder().value("This is a test").build())
+                    .eventTime_ms(10000)
+                    .build();
+            entityController.submitEvent(event);
+            assertEquals(1, entityController.getSessionProxyQueueDepth(), "Queue depth before tick");
+            assertEquals(10000, entityController.getNextEventTime_ms());
+            SessionTickResult result = entityController.tick(5000);
+            assertEquals(10000, result.getNextEventTime_ms());
+            result = entityController.tick(10000);
+            assertEquals(Long.MAX_VALUE, result.getNextEventTime_ms());
+        }
+
+        @Test
         @DisplayName("Confirm that getSimulationEntityHandles() works as expected")
         void getAllEntityHandles() {
             Collection<EntityHandle> allPaths = entityController.getSimulationEntityHandles();
@@ -136,24 +154,30 @@ class EntityControllerTest {
             // The result should be an error because there are no handlers
             // registered in Bob.
             //
-            assertTrue(out instanceof Error);
+            assertTrue(out instanceof CommandResult);
+            HandlerContent hc = ((CommandResult) out).getContent();
+            assertTrue(hc instanceof ExceptionContent);
         }
 
         @Test
         @DisplayName("Confirm that an error message can be converted to a result.")
         void testConvertErrorMessageToResult() {
+            Throwable err = new java.lang.Error("Broken Exception");
             var b = ErrorResponse.builder()
                     .sequenceNumber(1234)
                     .messageID(3)
-                    .errorDescription("It's broken")
                     .destination(Address.makeExternalAddress(unit.getHandle()))
                     .source(Address.makeExternalAddress(unit.getHandle()))
-                    .content(ExceptionCommand.builder().thrown(new Throwable()).build());
+                    .content(ExceptionContent.builder().errorDescription("It's broken").thrown(err).build());
             ErrorResponse er = b.build();
             BaseSessionResult sr = entityController.convertMessageToResult(er);
             assertNotNull(sr);
-            assertTrue(sr instanceof Error);
-            assertEquals("BLUE" + Entity.ENTITY_PATH_DELIMITER + "Bob", ((Error)sr).getEntityPath());
+            assertTrue(sr instanceof CommandResult);
+            assertEquals("BLUE" + Entity.ENTITY_PATH_DELIMITER + "Bob", ((CommandResult)sr).getEntityPath());
+            HandlerContent hc = ((CommandResult) sr).getContent();
+            assertTrue(hc instanceof ExceptionContent);
+            assertTrue(((ExceptionContent) hc).getThrown() instanceof java.lang.Error, "Wrong Throwable Object");
+            assertEquals("Broken Exception", ((ExceptionContent) hc).getThrown().getMessage(), "Wrong Throwable Message");
         }
     }
 

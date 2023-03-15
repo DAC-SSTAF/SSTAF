@@ -219,12 +219,12 @@ class EntityTest {
         ErrorResponse er = (ErrorResponse) out.get(0);
         assertNotNull(er);
         assertNotNull(er.getContent());
-        assertEquals(ExceptionCommand.class, er.getContent().getClass());
-        ExceptionCommand exceptionContent = (ExceptionCommand) er.content;
+        assertEquals(ExceptionContent.class, er.getContent().getClass());
+        ExceptionContent exceptionContent = (ExceptionContent) er.content;
         assertNotNull(exceptionContent.getThrown());
         assertEquals(ERROR_MSG, exceptionContent.getThrown().getMessage());
-        System.out.println(er.getErrorDescription());
-        assertTrue(er.getErrorDescription().contains("Error at time 11000 ms, processing"));
+        System.out.println(exceptionContent.getErrorDescription());
+        assertTrue(exceptionContent.getErrorDescription().contains("Error at time 11000 ms, processing"));
     }
 
 }
