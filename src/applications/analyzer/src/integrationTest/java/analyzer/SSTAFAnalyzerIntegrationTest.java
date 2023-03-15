@@ -322,8 +322,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
                 sendMessage(writer, endSessionMsg);
                 gotExpectedMessage(p, reader, "ExitResult");
-
-                p.waitFor(10, TimeUnit.SECONDS);
             });
         }
 
@@ -384,7 +382,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
 
@@ -415,9 +412,8 @@ public class SSTAFAnalyzerIntegrationTest {
                         "\"mode\":\"TICK\",\"time_ms\":2000}";
                 sendMessage(writer, ansurQuery);
                 gotExpectedMessage(p, reader, "TickResult");
-
-                p.waitFor(10, TimeUnit.SECONDS);
             });
+
         }
 
         @Test
@@ -449,7 +445,6 @@ public class SSTAFAnalyzerIntegrationTest {
                         gotExpectedMessage(p, reader, "TickResult");
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
 
@@ -488,7 +483,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
 
@@ -522,7 +516,8 @@ public class SSTAFAnalyzerIntegrationTest {
                         // should be an exception with gun not found error.
                         gotExpectedMessage(p, reader, "Gun M5 was not found");
 
-                        p.waitFor(10, TimeUnit.SECONDS);
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
                     });
         }
     }
