@@ -1,6 +1,7 @@
 package mil.sstaf.core.features;
 
 import mil.sstaf.core.configuration.SSTAFConfiguration;
+import mil.sstaf.core.module.ModuleLayerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,19 +158,36 @@ public class Loaders {
      * @param <T>         the type of the service
      * @return a descriptive {@code String}
      */
-    public static <T extends Feature> String getHelpWithServices(FeatureSpecification fs, Class<T> featureType) {
+    public static <T extends Feature> String getHelpWithServices(FeatureSpecification fs, Class<T> featureType,
+                                                                 ModuleLayer moduleLayer) {
 
-        return "SSTAF failed to load the specified service: '" + fs.toString()
-                + " as an implementation of '" +
-                featureType.getName() + "'\n" +
-                "Check: \n" +
-                "1. The jar containing the service is on the module path or the \n" +
-                "   module and and its module path are specified in the SSTAFConfiguration\n" +
-                "   or the Entity configuration file in which it is referenced.\n" +
-                "2. The module-info specifies:\n   'provides " + featureType.getName() +
-                " with NameOfTheImplementationClass'\n" +
-                "3. The module-info specifies that it is open to mil.sstaf.core\n\n" +
-                generateServiceReport(featureType);
+        String s1 = "SSTAF failed to load the specified service: '"
+                + fs.toString()
+                + "'"
+                + (fs.requireExact ? " (exact match)" : " (or better)")
+                + " as an implementation of '"
+                + featureType.getName() + "'\n"
+                + "Check: \n"
+                + "1. Module path issues -- Check that:\n"
+                + "   - The jar containing the service is in the JVM module path,\n"
+                + "     OR\n"
+                + "   - The module name from the module-info.java file (not \n"
+                + "     the jar name) and its path are specified in the "
+                + "     SSTAFConfiguration file, \n"
+                + "     OR\n"
+                + "   - The module name and its path are in the configuration file\n"
+                + "     for the Entity in which it is used.\n"
+                + "2. The module-info for the Feature/Handler/Agent implementation specifies:\n   'provides "
+                + featureType.getName()
+                + " with NameOfTheImplementationClass'\n"
+                + "3. The module-info specifies that it is open to mil.sstaf.core\n\n"
+                + generateServiceReport(featureType)
+                + "\nThe current working directory is "
+                + System.getProperty("user.dir")
+                + "\n\nModule Layer Report\n"
+                + ModuleLayerSupport.makeModuleLayerReport("current layer", moduleLayer);
+
+        return s1;
     }
 
 
@@ -182,7 +200,9 @@ public class Loaders {
     public static <T extends Feature> String generateServiceReport(Class<T> serviceType) {
         StringBuilder sb = new StringBuilder("Found implementations of '").append(serviceType.getName()).append("'\n");
         ServiceLoader<T> sl = ServiceLoader.load(serviceType);
+        int count = 0;
         for (Feature o : sl) {
+            ++count;
             sb.append(String.format("%s %d.%d.%d\n",
                     o.getName(), o.getMajorVersion(),
                     o.getMinorVersion(), o.getPatchVersion()));
@@ -207,7 +227,10 @@ public class Loaders {
             for (ModuleDescriptor.Requires requires : desc.requires()) {
                 sb.append("        ").append(requires.toString()).append("\n");
             }
-
+            ++count;
+        }
+        if (count == 0) {
+            sb.append("**** No implementations of '").append(serviceType.getName()).append("' were found\n");
         }
         return sb.toString();
     }

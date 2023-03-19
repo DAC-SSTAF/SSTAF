@@ -24,29 +24,29 @@ import org.slf4j.LoggerFactory;
 import java.lang.module.Configuration;
 import java.lang.module.FindException;
 import java.lang.module.ModuleFinder;
+import java.lang.module.ResolvedModule;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class ModuleLayerSupport {
     private static final Logger logger = LoggerFactory.getLogger(ModuleLayerSupport.class);
 
-
     public static ModuleLayer makeModuleLayer(ModuleLayer parentLayer,
                                               ModuleLayerDefinition def,
                                               ClassLoader parentLoader) {
-
-
         ModuleLayer moduleLayer;
 
         if (def == null) {
-            logger.debug("Reusing module layer from SSTAFConfiguration");
+            logger.info("Reusing module layer from SSTAFConfiguration");
             moduleLayer = parentLayer;
         } else if (def.getModules() == null || def.getModules().isEmpty()) {
-            logger.debug("Reusing module layer from SSTAFConfiguration");
+            logger.info("Reusing module layer from SSTAFConfiguration");
             moduleLayer = parentLayer;
         } else {
+            checkModules(def.getModules());
             List<Path> paths;
 
             if (def.getModulePaths() == null) {
@@ -71,24 +71,57 @@ public class ModuleLayerSupport {
                 }
             }
             try {
-                logger.debug("Creating new module layer. Parent ClassLoader is {}", parentLoader);
+                logger.info("Creating new module layer. Parent ClassLoader is {}", parentLoader);
                 Path[] pathArray = new Path[paths.size()];
                 paths.toArray(pathArray);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("paths are {}", Arrays.toString(pathArray));
-                    logger.debug("modules are {}", def.getModules());
+                    logger.info("paths are {}", Arrays.toString(pathArray));
+                    logger.info("modules are {}", def.getModules());
                 }
                 ModuleFinder moduleFinder = ModuleFinder.of(pathArray);
                 Configuration configuration = Configuration.resolveAndBind(moduleFinder,
                         List.of(parentLayer.configuration()),
                         ModuleFinder.of(), def.getModules());
                 moduleLayer = parentLayer.defineModulesWithOneLoader(configuration, parentLoader);
-                logger.debug("moduleLayer is {}", moduleLayer);
+                logger.info("moduleLayer is {}", moduleLayer);
             } catch (FindException findException) {
                 throw new SSTAFException("Could not find a module given paths " + paths, findException);
             }
         }
         return moduleLayer;
+    }
+
+    static void checkModules(Set<String> moduleNames) {
+        for(String s : moduleNames) {
+            if (s.endsWith(".jar")) {
+                throw new SSTAFException("ModuleDefinition contains a jar file (" + s +") rather than a module name");
+            }
+        }
+    }
+
+    public static String makeModuleLayerReport(String prefix, ModuleLayer current) {
+        if (current == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix).append(" contains: ").append('\n');
+
+        int count = 0;
+        for (Module m : current.modules()) {
+            sb.append("    ").append(m.getName()).append('\n');
+            ++count;
+        }
+        if (count == 0) {
+            sb.append("    layer is empty");
+        }
+
+        int n = 0;
+        for (ModuleLayer p : current.parents()) {
+            ++n;
+            String res = makeModuleLayerReport(prefix+"->parent-"+n, p);
+            sb.append(res);
+        }
+        return sb.toString();
     }
 }
 

@@ -97,7 +97,7 @@ public class Resolver {
                 logger.debug("{} - Feature loaded and added to cache. {}", owner.getPath(), featureCache.keySet());
                 resolveDependencies(feature);
             } else {
-                String errorMessage = getHelpWithServices(specification, Feature.class);
+                String errorMessage = getHelpWithServices(specification, Feature.class, moduleLayer);
                 logger.error(errorMessage);
                 throw new SSTAFException("Failed to load " +
                         specification + " as " + Feature.class);
