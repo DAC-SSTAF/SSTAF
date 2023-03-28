@@ -28,10 +28,10 @@ Table 1: Subdirectories
 
 # Building SSTAF
 
-Building SSTAF requires two steps.
+SSTAF requires Java 11 JDK and Gradle 8.0.2 to build.  Building SSTAF requires two steps:
 
 1. Compile and install the SSTAF Gradle plugin, In the 'plugin' directory, invoke “gradle build publishToMavenLocal”.
-1. Compile and install the SSTAF system. In the 'src' directory, invoke “gradle build”.
+2. Compile and install the SSTAF system. In the 'src' directory, invoke “gradle build”.
 
 
 # Documents
