@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import mil.sstaf.core.entity.Rank;
 
 import java.util.Random;
 
@@ -20,7 +19,7 @@ import java.util.Random;
  * values.
  */
 @Jacksonized
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
 public class FeatureConfiguration {
     @Getter
