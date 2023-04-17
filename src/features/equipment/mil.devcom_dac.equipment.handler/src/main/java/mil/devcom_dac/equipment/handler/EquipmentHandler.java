@@ -58,9 +58,6 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
     @Override
     public void init() {
         super.init();
-        if (currentGun.getMagazine() == null) {
-            kit.reload(currentGun);
-        }
     }
 
     /**
@@ -100,6 +97,13 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
             currentGun = gun;
         }
     }
+    private int getRoundsInCurrentGun()
+    {
+        int returnValue = 0;
+        if (currentGun.getMagazine() != null)
+            returnValue = currentGun.getMagazine().getCurrentLoad();
+        return returnValue;
+    }
 
 @Override
     public ProcessingResult process(HandlerContent arg, long scheduledTime_ms, long currentTime_ms, Address from, long id, Address respondTo) {
@@ -110,7 +114,7 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
                 setGun(shootMessage.getGun());
             }
             int numShot = currentGun.shoot(shootMessage.getNumToShoot());
-            int remaining = currentGun.getMagazine().getCurrentLoad();
+            int remaining = getRoundsInCurrentGun();
             GunState response = GunState.builder()
                     .numberShot(numShot)
                     .roundsInCurrentGun(remaining)
@@ -127,10 +131,13 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
             if (rm.getGun() != null) {
                 setGun(rm.getGun());
             }
-            reload(currentGun);
+            if (!reload(currentGun))
+                throw new SSTAFException("Gun " + currentGun.getName() + " reload failed, no magazine of type " +
+                        currentGun.getMagazineType() + " available.");
+
             GunState gs = GunState.builder()
                     .currentGun(currentGun.getName())
-                    .roundsInCurrentGun(currentGun.getMagazine().getCurrentLoad())
+                    .roundsInCurrentGun(getRoundsInCurrentGun())
                     .build();
             Message m = buildNormalResponse(gs, id, respondTo);
             rv = ProcessingResult.of(m);
@@ -139,7 +146,7 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
             setGun(sg.getGun());
             GunState gs = GunState.builder()
                     .currentGun(currentGun.getName())
-                    .roundsInCurrentGun(currentGun.getMagazine().getCurrentLoad())
+                    .roundsInCurrentGun(getRoundsInCurrentGun())
                     .build();
             Message m = buildNormalResponse(gs, id, respondTo);
             rv = ProcessingResult.of(m);

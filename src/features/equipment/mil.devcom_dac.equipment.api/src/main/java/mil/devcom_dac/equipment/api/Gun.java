@@ -65,7 +65,7 @@ public class Gun extends Item {
     }
 
     public int shoot(int numToShoot) {
-        return magazine.expendRounds(numToShoot);
+        return magazine == null ? 0 :magazine.expendRounds(numToShoot);
     }
 
 

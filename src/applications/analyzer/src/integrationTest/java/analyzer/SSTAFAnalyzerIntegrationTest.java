@@ -322,8 +322,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
                 sendMessage(writer, endSessionMsg);
                 gotExpectedMessage(p, reader, "ExitResult");
-
-                p.waitFor(10, TimeUnit.SECONDS);
             });
         }
 
@@ -384,7 +382,6 @@ public class SSTAFAnalyzerIntegrationTest {
 
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
 
@@ -415,9 +412,8 @@ public class SSTAFAnalyzerIntegrationTest {
                         "\"mode\":\"TICK\",\"time_ms\":2000}";
                 sendMessage(writer, ansurQuery);
                 gotExpectedMessage(p, reader, "TickResult");
-
-                p.waitFor(10, TimeUnit.SECONDS);
             });
+
         }
 
         @Test
@@ -449,7 +445,6 @@ public class SSTAFAnalyzerIntegrationTest {
                         gotExpectedMessage(p, reader, "TickResult");
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
                     });
         }
 
@@ -488,7 +483,41 @@ public class SSTAFAnalyzerIntegrationTest {
 
                         sendMessage(writer, endSessionMsg);
                         gotExpectedMessage(p, reader, "ExitResult");
-                        p.waitFor(10, TimeUnit.SECONDS);
+                    });
+        }
+
+        @Test
+        @DisplayName("Check EquipmentManager command to attempt Shoot on gun that does not exist")
+        void issue10ShootInvalidGunTest() {
+            assertDoesNotThrow(
+                    () -> {
+                        String entityFile = Path.of(inputDir.toString(), "goodEntityFiles", "OnePlatoon.json").toString();
+                        Process p = makeProcessWithArg(entityFile);
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        BufferedWriter writer = new BufferedWriter(osw);
+                        InputStreamReader isr = new InputStreamReader(p.getInputStream());
+                        BufferedReader reader = new BufferedReader(isr);
+
+                        sendMessage(writer, getEntitiesMsg);
+                        gotExpectedMessage(p, reader, "GetEntitiesResult");
+
+                        //
+                        // Check provided command
+                        //
+                        String shootCmd = "{\"class\":\"mil.sstaf.analyzer.messages.CommandList\"," +
+                                "\"commands\":[{\"class\":\"mil.sstaf.session.messages.Command\"," +
+                                "\"recipientPath\":\"BLUE:Test Platoon:PL\"," + // changed to match test input
+                                "\"content\":" +
+                                "{\"class\":\"mil.devcom_dac.equipment.messages.Shoot\"," +
+                                "\"gun\":\"M5\",\"numToShoot\":1}}]," +
+                                "\"mode\":\"TICK\",\"time_ms\":2000}";
+                        sendMessage(writer, shootCmd);
+
+                        // should be an exception with gun not found error.
+                        gotExpectedMessage(p, reader, "Gun M5 was not found");
+
+                        sendMessage(writer, endSessionMsg);
+                        gotExpectedMessage(p, reader, "ExitResult");
                     });
         }
     }

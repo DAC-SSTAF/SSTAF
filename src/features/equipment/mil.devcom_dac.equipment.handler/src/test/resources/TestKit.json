@@ -1,7 +1,8 @@
 {
   "class" : "mil.devcom_dac.equipment.api.Kit",
   "guns": [
-    "M16A1.json"
+    "M16A1.json",
+    "M16A2.json"
   ],
   "magazines": [
     "STANAGMagazine.json",
