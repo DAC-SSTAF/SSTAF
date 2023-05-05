@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static java.lang.System.exit;
@@ -42,12 +43,23 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        if (args.length != 1) {
+        if (args.length < 1 || args.length > 2) {
             printUsage();
             exit(ERROR_NO_ARGS);
         }
 
+        boolean disableTimeout = false;
         String entityFileName = args[0];
+        if (entityFileName.equals("--notimeout") && args.length == 2)
+        {
+            entityFileName = args[1];
+            disableTimeout = true;
+        } else if (entityFileName == "--notimeout" && args.length == 1)
+        {
+            printUsage();
+            exit(ERROR_NO_ARGS);
+        }
+
         File entityFile = new File(entityFileName);
         if (!entityFile.exists() | !entityFile.canRead()) {
             System.err.printf("Entity file '%s' does not exist or is not readable\n", entityFileName);
@@ -65,6 +77,7 @@ public class Main {
         }
         Session session = Session.of(sessionConfiguration, entityController);
         Analyzer analyzer = Analyzer.fromSystemIO(session);
+        analyzer.setDisableTimeout(disableTimeout);
         logger.info("Starting analyzer loop");
         int rv;
         try {
@@ -79,7 +92,7 @@ public class Main {
      * Print Usage.
      */
     public static void printUsage() {
-        System.err.println("Usage: sstaf-analyzer [-Dmil.sstaf.configuration=configFile]  entityFile");
+        System.err.println("Usage: sstaf-analyzer [-Dmil.sstaf.configuration=configFile] [--notimeout]  entityFile");
 
     }
 
