@@ -51,7 +51,7 @@ public class Analyzer {
 
     private final AtomicBoolean keepRunning = new AtomicBoolean(true);
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-
+    private AtomicBoolean disableTimeout = new AtomicBoolean(false);
     private final AtomicLong taskCounter = new AtomicLong(0);
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     /**
@@ -147,7 +147,7 @@ public class Analyzer {
                         ++ nulls;
                         logger.debug("Received null command - {}/{}",
                                 nulls, maxNulls);
-                        if (nulls >= 100) {
+                        if (nulls >= 100 && !disableTimeout.get()) {
                             keepRunning.set(false);
                         } else {
                             Thread.sleep(100);
@@ -207,6 +207,15 @@ public class Analyzer {
         var outputConsumer = new PrintStreamConsumer(System.out);
         return new Analyzer(session, inputSupplier, deserializer,
                 serializer, outputConsumer);
+    }
+
+    /**
+     * Disables the default exit timeout.  This will require an Exit command or an exception to occur to exit.
+     * @param disableTimeout true to disable
+     */
+    public void setDisableTimeout(boolean disableTimeout)
+    {
+        this.disableTimeout = new AtomicBoolean(disableTimeout);
     }
 
     /**
