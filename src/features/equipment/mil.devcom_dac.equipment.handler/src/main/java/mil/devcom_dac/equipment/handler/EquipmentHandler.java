@@ -19,12 +19,10 @@ package mil.devcom_dac.equipment.handler;
 
 import mil.devcom_dac.equipment.api.*;
 import mil.devcom_dac.equipment.messages.*;
+import mil.sstaf.blackboard.api.Blackboard;
 import mil.sstaf.core.entity.Address;
 import mil.sstaf.core.entity.Message;
-import mil.sstaf.core.features.BaseHandler;
-import mil.sstaf.core.features.FeatureConfiguration;
-import mil.sstaf.core.features.HandlerContent;
-import mil.sstaf.core.features.ProcessingResult;
+import mil.sstaf.core.features.*;
 import mil.sstaf.core.util.SSTAFException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +32,27 @@ import java.util.*;
 public class EquipmentHandler extends BaseHandler implements EquipmentManagement {
     public static final String FEATURE_NAME = "Kit Manager";
     public static final int MAJOR_VERSION = 0;
-    public static final int MINOR_VERSION = 1;
+    public static final int MINOR_VERSION = 2;
     public static final int PATCH_VERSION = 0;
 
     private static final Logger logger = LoggerFactory.getLogger(EquipmentHandler.class);
+
+    public static final String BK_SHOOT_METRICS = "Shoot Metrics";
 
     private Kit kit;
 
     private Gun currentGun;
 
+    /**
+     * Number of shots this soldier takes, used for shoot metrics generation.
+     */
+    private int cumulativeShots = 0;
+
+    /**
+     * Blackboard to push shoot metrics
+     */
+    @Requires
+    Blackboard blackboard;
 
     public EquipmentHandler() {
         super(FEATURE_NAME, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION,
@@ -120,6 +130,17 @@ public class EquipmentHandler extends BaseHandler implements EquipmentManagement
                     .roundsInCurrentGun(remaining)
                     .currentGun(currentGun.getName())
                     .build();
+
+            // If we are connected to a blackboard, add the shoot metrics.
+            if (blackboard != null) {
+                cumulativeShots += numShot;
+
+                GunMetric metric = GunMetric.builder().numberShot(cumulativeShots).build();
+
+                // Publish metrics
+                blackboard.addEntry(BK_SHOOT_METRICS, metric, currentTime_ms);
+            }
+
             Message m = buildNormalResponse(response, id, respondTo);
             rv = ProcessingResult.of(m);
         } else if (arg instanceof GetInventory) {
