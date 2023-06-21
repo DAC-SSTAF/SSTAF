@@ -28,8 +28,11 @@ module mil.devcom_dac.equipment.handler {
     requires mil.devcom_dac.equipment.api;
 
     requires org.slf4j;
+    requires mil.sstaf.blackboard.api;
 
     provides EquipmentManagement with EquipmentHandler;
     provides SoldierKit with EquipmentHandler;
     provides Feature with EquipmentHandler;
+
+    opens mil.devcom_dac.equipment.handler to mil.sstaf.core;
 }
