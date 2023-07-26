@@ -8,11 +8,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.ow2.asm:asm:9.2'
-        classpath 'org.projectlombok:lombok:1.18.22'
-        classpath 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-        classpath 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-        classpath 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+        classpath 'org.ow2.asm:asm:9.5'
+        classpath 'org.projectlombok:lombok:1.18.28'
+        classpath 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+        classpath 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+        classpath 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     }
 }
 
@@ -20,7 +20,7 @@ plugins {
     id 'java-library'
     id 'jvm-test-suite'
     id 'maven-publish'
-    id 'io.freefair.lombok' version '6.4.1'
+    id 'io.freefair.lombok' version '8.1.0'
     id 'sstaf' version '1.0'
 	id 'java'
 }
@@ -37,7 +37,7 @@ java {
 
 /*
  * Many libraries have yet to be upgrades as fully-compliant modules. This block defines modules for specific
- * legacy libraries. It works with the plugin in the buildSrc diqrectory,
+ * legacy libraries. It works with the plugin in the buildSrc directory,
  */
 Set<Project> modules = subprojects.findAll { project ->
     project.path.contains('mil.') || project.path.contains('edu')
@@ -93,9 +93,9 @@ configure(modules) {
             exports('org.apache.commons.math3.analysis')
         }
 
-        module('jopt-simple-4.6.jar', 'jopt.simple', '4.6')
-        module('jmh-generator-annprocess-1.21.jar', 'jmh.generator.annprocess', '1.21')
-        module('jmh-core-1.21.jar', 'jmh.core', '1.21') {
+        module('jopt-simple-5.0.4.jar', 'jopt.simple', '5.0.4')
+        module('jmh-generator-annprocess-1.36.jar', 'jmh.generator.annprocess', '1.36')
+        module('jmh-core-1.36.jar', 'jmh.core', '1.36') {
             exports('org.openjdk.jmh.annotations')
             exports('org.openjdk.jmh')
         }
@@ -115,21 +115,21 @@ configure(modules) {
 
     dependencies {
 
-		implementation 'org.slf4j:slf4j-api:2.0.6'
-		implementation 'org.slf4j:slf4j-simple:2.0.6'
+		implementation 'org.slf4j:slf4j-api:2.0.7'
+		implementation 'org.slf4j:slf4j-simple:2.0.7'
         implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
-        implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-        implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+        implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+        implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
 
-        implementation 'org.projectlombok:lombok:1.18.22'
+        implementation 'org.projectlombok:lombok:1.18.28'
 
-        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.10.0'
         testRuntimeOnly 'org.apiguardian:apiguardian-api:1.1.2'
-        testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
+        testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.7'
     }
 
     publishing {
@@ -159,18 +159,18 @@ configure(modules) {
             integrationTest(JvmTestSuite) {
                 dependencies {
                     implementation project()
-					implementation 'org.slf4j:slf4j-api:2.0.6'
-					implementation 'org.slf4j:slf4j-simple:2.0.6'
+					implementation 'org.slf4j:slf4j-api:2.0.7'
+					implementation 'org.slf4j:slf4j-simple:2.0.7'
 					implementation 'org.apache.commons:commons-math3:3.6.1'
-                    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-                    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-                    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
-                    implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+                    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+                    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+                    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+                    implementation 'org.junit.jupiter:junit-jupiter:5.10.0'
                     implementation 'org.apiguardian:apiguardian-api:1.1.2'
-                    runtimeOnly 'org.junit.jupiter:junit-jupiter:5.8.2'
+                    runtimeOnly 'org.junit.jupiter:junit-jupiter:5.10.0'
                     runtimeOnly 'org.apiguardian:apiguardian-api:1.1.2'
-					runtimeOnly 'org.slf4j:slf4j-api:2.0.6'
-					runtimeOnly 'org.slf4j:slf4j-simple:2.0.6'
+					runtimeOnly 'org.slf4j:slf4j-api:2.0.7'
+					runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
                 }
 
                 targets {

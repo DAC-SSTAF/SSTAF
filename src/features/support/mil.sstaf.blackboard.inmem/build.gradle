@@ -1,7 +1,7 @@
 dependencies {
     api project(':features:support:mil.sstaf.blackboard.api')
     implementation project(':framework:mil.sstaf.core')
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
 
     testImplementation project(':verification:mil.sstaftest.util')
 
