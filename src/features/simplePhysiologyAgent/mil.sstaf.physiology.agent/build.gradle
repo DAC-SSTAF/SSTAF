@@ -4,7 +4,7 @@ dependencies {
     implementation project(':framework:mil.sstaf.core')
     implementation project(':features:support:mil.sstaf.blackboard.api');
 
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
     implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
     implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
     implementation project(':features:simplePhysiologyAgent:mil.sstaf.physiology.api')
