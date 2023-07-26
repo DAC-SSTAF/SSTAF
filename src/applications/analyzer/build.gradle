@@ -16,9 +16,9 @@ dependencies {
     implementation project(':framework:mil.sstaf.analyzer')
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     runtimeOnly group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
     runtimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
@@ -95,9 +95,9 @@ testing {
                 implementation project(':framework:mil.sstaf.analyzer')
 				implementation 'org.slf4j:slf4j-api:2.0.6'
 				implementation 'org.slf4j:slf4j-simple:2.0.6'
-                implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-                implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-                implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+                implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+                implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+                implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
                 implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
                 runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
                 runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.handler')

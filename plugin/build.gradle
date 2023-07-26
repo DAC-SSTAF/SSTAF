@@ -15,9 +15,9 @@ repositories {
 
 dependencies {
     implementation 'org.ow2.asm:asm:9.2'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     // Use JUnit test framework for unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.8.1'

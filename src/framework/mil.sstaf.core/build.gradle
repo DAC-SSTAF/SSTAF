@@ -6,6 +6,8 @@ test.dependsOn(':testModules:mil.sstaftest.fred:build')
 test.dependsOn(':testModules:mil.sstaftest.barney:build')
 test.dependsOn(':testModules:mil.sstaftest.wilma:build')
 test.dependsOn(':testModules:mil.sstaftest.betty:build')
+integrationTest.dependsOn(':testFeatures:support:mil.sstaftest.mocks.pinky:build')
+integrationTest.dependsOn(':testFeatures:integration:mil.sstaftest.jamesbond:build')
 
 testing {
     suites {
