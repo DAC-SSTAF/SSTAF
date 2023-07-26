@@ -22,6 +22,7 @@ plugins {
     id 'maven-publish'
     id 'io.freefair.lombok' version '6.4.1'
     id 'sstaf' version '1.0'
+	id 'java'
 }
 
 repositories {
@@ -29,9 +30,9 @@ repositories {
     mavenLocal()
 }
 
-allprojects {
-    sourceCompatibility = 11
-    targetCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 /*
@@ -125,8 +126,9 @@ configure(modules) {
         implementation 'org.projectlombok:lombok:1.18.22'
 
         testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.9.0'
-        testRuntimeOnly  'org.apiguardian:apiguardian-api:1.1.2'
+        testRuntimeOnly 'org.apiguardian:apiguardian-api:1.1.2'
         testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
     }
 
@@ -164,7 +166,7 @@ configure(modules) {
                     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
                     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
                     implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
-                    implementation  'org.apiguardian:apiguardian-api:1.1.2'
+                    implementation 'org.apiguardian:apiguardian-api:1.1.2'
                     runtimeOnly 'org.junit.jupiter:junit-jupiter:5.8.2'
                     runtimeOnly 'org.apiguardian:apiguardian-api:1.1.2'
 					runtimeOnly 'org.slf4j:slf4j-api:2.0.6'

@@ -84,6 +84,10 @@ application {
 
 testing {
     suites {
+        test {
+            useJUnitJupiter()
+        }
+
         integrationTest(JvmTestSuite) {
             dependencies {
                 implementation project(':framework:mil.sstaf.core')
@@ -115,6 +119,14 @@ testing {
                 runtimeOnly project(':features:support:mil.sstaf.blackboard.api')
                 runtimeOnly project(':features:support:mil.sstaf.blackboard.inmem')
                 runtimeOnly project(':features:support:mil.sstaf.telemetry')
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
             }
         }
     }
