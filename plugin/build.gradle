@@ -21,7 +21,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     // Use JUnit test framework for unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher:1.10.0-M1')
 
 }
 

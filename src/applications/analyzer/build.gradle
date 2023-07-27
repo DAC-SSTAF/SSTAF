@@ -20,7 +20,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     implementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    runtimeOnly group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+    runtimeOnly group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
     runtimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.7'
     runtimeOnly group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
     runtimeOnly project(':features:ansurHandler:mil.devcom_sc.ansur.api')
@@ -63,7 +63,7 @@ sstaf {
     //
     // CSV support for ANSUR
     //
-    module('commons-csv-1.8.jar', 'commons.csv', '1.8') {
+    module('commons-csv-1.10.0.jar', 'commons.csv', '1.10.0') {
         exports 'org.apache.commons.csv'
     }
 

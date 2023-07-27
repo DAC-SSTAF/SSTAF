@@ -103,7 +103,7 @@ configure(modules) {
         //
         // CSV support for ANSUR
         //
-        module('commons-csv-1.8.jar', 'commons.csv', '1.8') {
+        module('commons-csv-1.10.0.jar', 'commons.csv', '1.10.0') {
             exports 'org.apache.commons.csv'
         }
 

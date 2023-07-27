@@ -52,7 +52,8 @@ public class StringFilterTest {
                 "5.5, 215, Wilma, 81, 564.5" + '\n';
 
         Reader reader = new StringReader(fakeCSV);
-        return new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreSurroundingSpaces());
+        return new CSVParser(reader, CSVFormat.DEFAULT.builder().
+                setHeader().setSkipHeaderRecord(true).setIgnoreSurroundingSpaces(true).build());
     }
 
 
