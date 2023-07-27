@@ -2,7 +2,7 @@ dependencies {
     implementation project(':framework:mil.sstaf.core')
     implementation project(':features:ansurHandler:mil.devcom_sc.ansur.api')
     implementation project(':features:ansurHandler:mil.devcom_sc.ansur.messages')
-    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 }
 
 task copyTestResources(type: Copy) {
@@ -17,5 +17,7 @@ task copyResources(type: Copy) {
 }
 processResources.dependsOn copyResources
 
-
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+}
 

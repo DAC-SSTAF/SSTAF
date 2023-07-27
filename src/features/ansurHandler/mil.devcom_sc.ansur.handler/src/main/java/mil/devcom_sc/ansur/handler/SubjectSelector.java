@@ -140,7 +140,8 @@ public class SubjectSelector {
         try {
             Reader reader = new InputStreamReader(inputStream);
             CSVParser parser = new CSVParser(reader,
-                    CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreSurroundingSpaces().withIgnoreHeaderCase());
+                    CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).
+                            setIgnoreSurroundingSpaces(true).setIgnoreHeaderCase(true).build());
 
             for (final CSVRecord record: parser) {
                 boolean itMatches = true;
