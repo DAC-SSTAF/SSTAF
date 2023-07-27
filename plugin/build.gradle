@@ -6,6 +6,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '1.2.0'
+    id 'jvm-test-suite'
 }
 
 repositories {
@@ -20,11 +21,16 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
     // Use JUnit test framework for unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 group 'sstaf'
 version '1.0'
+
+test {
+    useJUnitPlatform()
+}
 
 gradlePlugin {
     // Define the plugin
