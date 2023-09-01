@@ -110,7 +110,7 @@ public class ResourceManager {
             String resourceNameLocalFS = resourceName.replaceAll("/", File.separator);
             path = Path.of(tempDir.toString(), resourceNameLocalFS);
         }
-        logger.warn("Extracting {} to {}", resourceName, path);
+        logger.debug("Extracting {} to {}", resourceName, path);
         Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
         return path.toFile();
     }
