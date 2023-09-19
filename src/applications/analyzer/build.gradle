@@ -83,19 +83,21 @@ application {
 }
 
 startScripts {
-    // MODULE_PATH is too long when using separate jar files, so just set the lib path instead.
+    doLast() {
+        // MODULE_PATH is too long when using separate jar files, so just set the lib path instead.
 
-    def winScriptFile = file getWindowsScript()
-    def winFileText = winScriptFile.text
-    winFileText = winFileText.replaceAll('set MODULE_PATH=.*', 'rem original MODULE_PATH declaration replaced by:\nset MODULE_PATH=%APP_HOME%\\\\lib')
-    winScriptFile.text = winFileText
+        def winScriptFile = file getWindowsScript()
+        def winFileText = winScriptFile.text
+        winFileText = winFileText.replaceAll('set MODULE_PATH=.*', 'rem original MODULE_PATH declaration replaced by:\nset MODULE_PATH=%APP_HOME%\\\\lib')
+        winScriptFile.text = winFileText
 
-    // This might not be required, as I don't have a UNIX machine to test on.
+        // This might not be required, as I don't have a UNIX machine to test on.
 
-    //def unixScriptFile = file getUnixScript()
-    //def unixFileText = unixScriptFile.text
-    //unixFileText = unixFileText.replaceFirst('MODULE_PATH=.*', '# original MODULE_PATH declaration replaced by:\nMODULE_PATH=\\$APP_HOME/lib')
-    //unixScriptFile.text = unixFileText
+        //def unixScriptFile = file getUnixScript()
+        //def unixFileText = unixScriptFile.text
+        //unixFileText = unixFileText.replaceFirst('MODULE_PATH=.*', '# original MODULE_PATH declaration replaced by:\nMODULE_PATH=\\$APP_HOME/lib')
+        //unixScriptFile.text = unixFileText
+    }
 }
 
 testing {
