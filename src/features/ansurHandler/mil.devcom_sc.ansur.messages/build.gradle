@@ -1,6 +1,6 @@
 dependencies {
     implementation project(':framework:mil.sstaf.core')
-    implementation 'org.projectlombok:lombok:1.18.28'
+    implementation 'org.projectlombok:lombok:1.18.30'
 
     testRuntimeOnly project(":features:support:mil.sstaf.blackboard.inmem")
 }

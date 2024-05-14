@@ -57,3 +57,5 @@ src/framework/mil.sstaf.core/src/integrationTest/resources/modules/pinky/*.jar
 #
 src/applications/analyzer/sstafTelemetry
 **/sstafTelemetry
+
+plugin/src/main/java/checksums.json
