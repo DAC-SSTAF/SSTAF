@@ -5,6 +5,7 @@
 // Specifies from where to retrieve the plugins.
 //
 pluginManagement {
+	includeBuild '../plugin'
     repositories {
         mavenLocal()
         mavenCentral()

@@ -189,5 +189,11 @@ configure(modules) {
     }
 }
 
+tasks.named('clean') {
+	dependsOn gradle.includedBuild('plugin').task(':clean')
+}
 
-
+tasks.named('build') {
+	dependsOn gradle.includedBuild('plugin').task(':build')
+	dependsOn gradle.includedBuild('plugin').task(':publishToMavenLocal')
+}
